@@ -1,49 +1,21 @@
-# 🌱 Greenrise - API Backend
+MIT License
 
-API RESTful desenvolvida em Node.js para gerenciamento de hortaliças e usuários.
+Copyright (c) 2025 Ricardo Estevam 
 
-## 🚀 Tecnologias Utilizadas
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-- **Backend:** Node.js, Express.js
-- **Banco de Dados:** MongoDB com Mongoose
-- **Autenticação:** JWT (JSON Web Tokens)
-- **Segurança:** BCrypt para criptografia
-- **Upload:** Multer para imagens
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-## 📋 Funcionalidades
-
-### 👤 Módulo de Usuários
-- ✅ Cadastro de usuários com upload de imagem
-- ✅ Sistema de login com autenticação JWT
-- ✅ CRUD completo de usuários
-
-### 🌿 Módulo de Hortaliças
-- ✅ Cadastro de hortaliças vinculadas ao usuário
-- ✅ CRUD completo de hortaliças
-- ✅ Campos: nome, tipo, tempo de cultivo, fertilizantes
-
-### 🔐 Segurança
-- ✅ Autenticação via JWT
-- ✅ Senhas criptografadas com BCrypt
-- ✅ Middleware de proteção de rotas
-
-## 🛠 Como Usar
-
-### Pré-requisitos
-- Node.js (v18 ou superior)
-- MongoDB
-- npm ou yarn
-
-### Instalação
-```bash
-# Clone o repositório
-git clone https://github.com/erlonviana/pi_dsm3_backend.git
-
-# Acesse a pasta do backend
-cd pi_dsm3_backend/back-end
-
-# Instale as dependências
-npm install
-
-# Execute a aplicação
-npm start
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
