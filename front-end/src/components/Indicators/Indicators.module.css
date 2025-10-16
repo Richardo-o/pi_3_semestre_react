@@ -1,0 +1,42 @@
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.card {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: white;
+}
+
+.blue {
+  background-color: #1976D2;
+}
+
+.green {
+  background-color: #388E3C;
+}
+
+.yellow {
+  background-color: #FFA000;
+}
+
+.label {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.value {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.status {
+  font-size: 13px;
+  opacity: 1;
+  color: #ffffff;
+}

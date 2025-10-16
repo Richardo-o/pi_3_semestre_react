@@ -1,0 +1,22 @@
+.container {
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  color: #212121;
+}
+
+.title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #212121;
+}
+
+.alertCard {
+  background: #fff3cd;
+  padding: 8px;
+  margin-top: 10px;
+  border-left: 5px solid #ffc107;
+  font-size: 14px;
+  color: #5a4000;
+}
