@@ -22,7 +22,7 @@ export default function Sidebar() {
           </li>
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faLeaf} />
-            <span>Sensores</span>
+            <span><a href="/growVegetable">Adicionar Hortaliça</a></span>
           </li>
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faCamera} />
