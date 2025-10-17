@@ -8,6 +8,18 @@ import hortalicaRoutes from "./routes/hortalicaRoutes.js";
 import path from "path"; 
 import { fileURLToPath } from 'url';
 
+
+
+import cors from "cors";
+
+
+// Se NÃO usa cookies/sessão:
+app.use(cors({
+  origin: "http://localhost:3000",     // URL do seu front
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
+}));
+
 //Importando mongoose
 import mongoose from "mongoose";
 
