@@ -2,6 +2,7 @@
   display: flex;
   height: 100vh;
   background-color: #e5edf5;
+  width: 100vw;
 }
 
 .mainContent {
