@@ -1,3 +1,4 @@
+// src/components/VegetableForm/VegetableForm.jsx
 import React, { useState } from "react";
 import {
   FaLeaf,
@@ -13,7 +14,10 @@ import {
   FaUndo,
 } from "react-icons/fa";
 
-import styles from "@/components/VegetableForm/VegetableForm.module.css"; // <- CSS Module
+// Helper da API (usa NEXT_PUBLIC_API_BASE_URL e token do localStorage/env)
+import { apiFetch } from "@/services/api";
+
+import styles from "@/components/VegetableForm/VegetableForm.module.css"; // CSS Module
 
 const VegetableForm = () => {
   const [form, setForm] = useState({
@@ -57,7 +61,8 @@ const VegetableForm = () => {
     if (isNaN(na) || na < 0 || na > 100) e.nivel_agua = "0 a 100.";
 
     form.fertilizantes.forEach((f, idx) => {
-      if (f.fertilizante && !f.fertilizante.trim()) e[`fertilizantes_${idx}`] = "Remova ou preencha.";
+      if (f.fertilizante && !f.fertilizante.trim())
+        e[`fertilizantes_${idx}`] = "Remova ou preencha.";
     });
 
     setErrors(e);
@@ -78,25 +83,6 @@ const VegetableForm = () => {
     }));
   }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (!validate()) return;
-
-    const payload = {
-      nome_hortalica: form.nome_hortalica.trim(),
-      tempo_estimado: form.tempo_estimado === "" ? null : Number(form.tempo_estimado),
-      tempo_real: form.tempo_real === "" ? null : Number(form.tempo_real),
-      tipo_hortalica: form.tipo_hortalica.trim(),
-      fertilizantes: form.fertilizantes
-        .map((f) => ({ fertilizante: f.fertilizante.trim() }))
-        .filter((f) => f.fertilizante !== ""),
-      nivel: { nivel_agua: Number(form.nivel.nivel_agua) },
-    };
-
-    console.log("Submitting payload:", payload);
-    alert("Dados prontos! Veja o console para o JSON enviado.");
-  }
-
   function handleReset() {
     setForm({
       nome_hortalica: "",
@@ -107,6 +93,42 @@ const VegetableForm = () => {
       nivel: { nivel_agua: 50 },
     });
     setErrors({});
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const payload = {
+      nome_hortalica: form.nome_hortalica.trim(),
+      tempo_estimado: form.tempo_estimado === "" ? null : Number(form.tempo_estimado),
+      tempo_real: form.tempo_real === "" ? null : Number(form.tempo_real),
+      tipo_hortalica: form.tipo_hortalica.trim(),
+      fertilizantes: form.fertilizantes
+        .map((f) => ({ fertilizante: (f.fertilizante || "").trim() }))
+        .filter((f) => f.fertilizante !== ""),
+      nivel: { nivel_agua: Number(form.nivel.nivel_agua) },
+    };
+
+    try {
+      // Se seu back for SEM prefixo /api:
+      await apiFetch("/hortalicas", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+
+      // Se seu back estiver montado com app.use('/api', ...), use isso em vez do acima:
+      // await apiFetch("/api/hortalicas", {
+      //   method: "POST",
+      //   body: JSON.stringify(payload),
+      // });
+
+      alert("Hortaliça cadastrada com sucesso!");
+      handleReset();
+    } catch (err) {
+      console.error(err);
+      alert(err.message);
+    }
   }
 
   return (
@@ -135,7 +157,9 @@ const VegetableForm = () => {
               value={form.nome_hortalica}
               onChange={(e) => setField("nome_hortalica", e.target.value)}
             />
-            {errors.nome_hortalica && <span className={`${styles.help} ${styles.error}`}>{errors.nome_hortalica}</span>}
+            {errors.nome_hortalica && (
+              <span className={`${styles.help} ${styles.error}`}>{errors.nome_hortalica}</span>
+            )}
           </div>
 
           {/* Tipo */}
@@ -153,7 +177,9 @@ const VegetableForm = () => {
                 <option key={op} value={op}>{op}</option>
               ))}
             </select>
-            {errors.tipo_hortalica && <span className={`${styles.help} ${styles.error}`}>{errors.tipo_hortalica}</span>}
+            {errors.tipo_hortalica && (
+              <span className={`${styles.help} ${styles.error}`}>{errors.tipo_hortalica}</span>
+            )}
           </div>
 
           {/* Tempo estimado */}
@@ -167,7 +193,9 @@ const VegetableForm = () => {
               value={form.tempo_estimado}
               onChange={(e) => setField("tempo_estimado", e.target.value)}
             />
-            {errors.tempo_estimado && <span className={`${styles.help} ${styles.error}`}>{errors.tempo_estimado}</span>}
+            {errors.tempo_estimado && (
+              <span className={`${styles.help} ${styles.error}`}>{errors.tempo_estimado}</span>
+            )}
           </div>
 
           {/* Tempo real */}
@@ -181,7 +209,9 @@ const VegetableForm = () => {
               value={form.tempo_real}
               onChange={(e) => setField("tempo_real", e.target.value)}
             />
-            {errors.tempo_real && <span className={`${styles.help} ${styles.error}`}>{errors.tempo_real}</span>}
+            {errors.tempo_real && (
+              <span className={`${styles.help} ${styles.error}`}>{errors.tempo_real}</span>
+            )}
           </div>
 
           {/* Nível de água */}
@@ -198,7 +228,9 @@ const VegetableForm = () => {
               onChange={(e) => setField("nivel.nivel_agua", Number(e.target.value))}
               className={styles.range}
             />
-            {errors.nivel_agua && <span className={`${styles.help} ${styles.error}`}>{errors.nivel_agua}</span>}
+            {errors.nivel_agua && (
+              <span className={`${styles.help} ${styles.error}`}>{errors.nivel_agua}</span>
+            )}
           </div>
         </div>
 
@@ -259,6 +291,6 @@ const VegetableForm = () => {
       </form>
     </div>
   );
-}
+};
 
-export default VegetableForm
+export default VegetableForm;
