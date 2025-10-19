@@ -17,8 +17,9 @@ const createHortalica = async (req, res) => {
             nome_hortalica, 
             tipo_hortalica, 
             tempo_estimado, 
+            tempo_real,
             fertilizantes, 
-            nivel_agua,
+            nivel,
             user 
         } = req.body;
         
@@ -35,8 +36,9 @@ const createHortalica = async (req, res) => {
             nome_hortalica,
             tipo_hortalica, 
             tempo_estimado,
+            tempo_real,
             fertilizantes,
-            nivel_agua,
+            nivel,
             user
         });
 
@@ -45,9 +47,9 @@ const createHortalica = async (req, res) => {
             tipo_hortalica, 
             userId, 
             tempo_estimado, 
-            null,
+            tempo_real,
             fertilizantes || [], 
-            nivel_agua
+            nivel?.nivel_agua
         );
         
         res.status(201).json({

@@ -6,7 +6,8 @@ import {
   faCamera,
   faFileAlt,
   faCog,
-  faSignOutAlt
+  faSignOutAlt,
+  faList
 } from '@fortawesome/free-solid-svg-icons';
 
 export default function Sidebar() {
@@ -23,6 +24,10 @@ export default function Sidebar() {
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faLeaf} />
             <span><a href="/growVegetable">Adicionar Hortaliça</a></span>
+          </li>
+          <li className={styles.menuItem}>
+            <FontAwesomeIcon icon={faList} />
+            <span><a href="/vegetableList">Lista de Hortaliças</a></span>
           </li>
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faCamera} />

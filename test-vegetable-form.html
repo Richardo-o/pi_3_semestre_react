@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Cadastro de Hortaliça</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste - Cadastro de Hortaliça</h1>
+        <p>Este formulário testa se o tempo_real e nível de água estão sendo salvos corretamente.</p>
+        
+        <div id="loginSection" class="form-group">
+            <h3>1. Primeiro, faça login:</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input type="email" id="loginEmail" placeholder="Email" value="teste@teste.com" style="flex: 1;">
+                <input type="password" id="loginPassword" placeholder="Senha" value="123456" style="flex: 1;">
+                <button type="button" id="loginBtn">Login</button>
+            </div>
+            <div id="loginStatus"></div>
+        </div>
+        
+        <form id="testForm" style="display: none;">
+            <h3>2. Agora teste o cadastro de hortaliça:</h3>
+            <div class="form-group">
+                <label for="nome_hortalica">Nome da Hortaliça *</label>
+                <input type="text" id="nome_hortalica" name="nome_hortalica" value="Alface Teste" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="tipo_hortalica">Tipo da Hortaliça *</label>
+                <select id="tipo_hortalica" name="tipo_hortalica" required>
+                    <option value="Folhosa">Folhosa</option>
+                    <option value="Fruto">Fruto</option>
+                    <option value="Raiz">Raiz</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="tempo_estimado">Tempo Estimado (dias)</label>
+                <input type="number" id="tempo_estimado" name="tempo_estimado" value="30">
+            </div>
+            
+            <div class="form-group">
+                <label for="tempo_real">Tempo Real (dias)</label>
+                <input type="number" id="tempo_real" name="tempo_real" value="28">
+            </div>
+            
+            <div class="form-group">
+                <label for="nivel_agua">Nível de Água (%)</label>
+                <input type="range" id="nivel_agua" name="nivel_agua" min="0" max="100" value="75">
+                <span id="nivel_display">75%</span>
+            </div>
+            
+            <div class="form-group">
+                <label for="fertilizantes">Fertilizantes (separados por vírgula)</label>
+                <input type="text" id="fertilizantes" name="fertilizantes" value="NPK 10-10-10, Composto orgânico">
+            </div>
+            
+            <button type="submit">Testar Cadastro</button>
+        </form>
+        
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        let authToken = null;
+
+        // Atualizar display do nível de água
+        document.getElementById('nivel_agua').addEventListener('input', function() {
+            document.getElementById('nivel_display').textContent = this.value + '%';
+        });
+
+        // Função de login
+        document.getElementById('loginBtn').addEventListener('click', async function() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const statusDiv = document.getElementById('loginStatus');
+
+            if (!email || !password) {
+                statusDiv.innerHTML = '<span style="color: red;">Email e senha são obrigatórios</span>';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:4000/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    authToken = result.token;
+                    statusDiv.innerHTML = '<span style="color: green;">✅ Login realizado com sucesso! Token obtido.</span>';
+                    document.getElementById('testForm').style.display = 'block';
+                } else {
+                    statusDiv.innerHTML = `<span style="color: red;">❌ Erro no login: ${result.error}</span>`;
+                }
+            } catch (error) {
+                statusDiv.innerHTML = `<span style="color: red;">❌ Erro de conexão: ${error.message}</span>`;
+            }
+        });
+
+        // Enviar formulário
+        document.getElementById('testForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = {
+                nome_hortalica: formData.get('nome_hortalica'),
+                tipo_hortalica: formData.get('tipo_hortalica'),
+                tempo_estimado: formData.get('tempo_estimado') ? parseInt(formData.get('tempo_estimado')) : null,
+                tempo_real: formData.get('tempo_real') ? parseInt(formData.get('tempo_real')) : null,
+                nivel: {
+                    nivel_agua: parseInt(formData.get('nivel_agua'))
+                },
+                fertilizantes: formData.get('fertilizantes').split(',').map(f => ({ fertilizante: f.trim() })).filter(f => f.fertilizante),
+                user: 'test-user-id' // ID de teste
+            };
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result';
+            resultDiv.innerHTML = 'Enviando dados...';
+
+            if (!authToken) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = '<h3>❌ Erro!</h3><p>Você precisa fazer login primeiro!</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:4000/hortalicas', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.innerHTML = `
+                        <h3>✅ Sucesso!</h3>
+                        <p>Hortaliça cadastrada com sucesso!</p>
+                        <p><strong>Dados enviados:</strong></p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                        <p><strong>Resposta do servidor:</strong></p>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                } else {
+                    throw new Error(result.error || 'Erro desconhecido');
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Erro!</h3>
+                    <p>Erro ao cadastrar hortaliça: ${error.message}</p>
+                    <p><strong>Dados enviados:</strong></p>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
