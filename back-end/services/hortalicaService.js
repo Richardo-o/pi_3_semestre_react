@@ -37,19 +37,22 @@ class hortalicaService {
     //Alterando dados da hortaliça
     async updateHortalica(id, nome_hortalica, tipo_hortalica, tempo_estimado, tempo_real, fertilizantes, nivel_agua) {
         try{
-            const updateHortalica = await Hortalica.findByIdAndUpdate(id,
-                {
-                    nome_hortalica,
-                    tipo_hortalica,
-                    tempo_estimado,
-                    tempo_real,
-                    fertilizantes,
-                    nivel: {
-                        nivel_agua
-                    }
-                },
-                { new: true }
-            );
+            const updateData = {
+                nome_hortalica,
+                tipo_hortalica,
+                tempo_estimado,
+                tempo_real,
+                fertilizantes
+            };
+
+            // Só atualiza o nível se nivel_agua for válido
+            if (nivel_agua !== null && nivel_agua !== undefined) {
+                updateData.nivel = {
+                    nivel_agua: Number(nivel_agua)
+                };
+            }
+
+            const updateHortalica = await Hortalica.findByIdAndUpdate(id, updateData, { new: true });
             console.log(`✅ Dados da hortaliça com id ${id} alterados com sucesso`)
             return updateHortalica;
         } catch (error){

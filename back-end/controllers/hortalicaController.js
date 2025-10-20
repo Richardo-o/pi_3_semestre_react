@@ -91,8 +91,11 @@ const updateHortalica = async (req, res) => {
                 tempo_estimado, 
                 tempo_real, 
                 fertilizantes, 
-                nivel_agua 
+                nivel 
             } = req.body;
+
+            // Extrair nivel_agua do objeto nivel
+            const nivel_agua = nivel?.nivel_agua;
 
             const updatedHortalica = await hortalicaService.updateHortalica(
                 id, nome_hortalica, tipo_hortalica, tempo_estimado, tempo_real, fertilizantes, nivel_agua
