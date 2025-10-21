@@ -16,16 +16,18 @@ export default function Home() {
       <main className={styles.mainContent}>
         <Header />
         <div className={styles.top}>
-          <GrowthChart />
+          <div className={styles.chartArea}>
+            <GrowthChart />
+          </div>
           <div className={styles.rightColumn}>
             <Indicators />
             <Alerts />
           </div>
         </div>
         <div className={styles.bottom}>
-          <CameraPreview />
-          <SensorDetails />
-          <RecentReports />
+          <div className={styles.tile}><CameraPreview /></div>
+          <div className={styles.tile}><SensorDetails /></div>
+          <div className={styles.tile}><RecentReports /></div>
         </div>
       </main>
     </div>

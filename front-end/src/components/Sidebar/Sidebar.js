@@ -1,3 +1,5 @@
+// components/Sidebar/Sidebar.tsx
+import Link from 'next/link';
 import styles from './Sidebar.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -15,38 +17,44 @@ export default function Sidebar() {
     <aside className={styles.sidebar}>
       <div className={styles.logo}>G</div>
 
-      <div className={styles.menuWrapper}>
+      <nav className={styles.menuWrapper} aria-label="Menu principal">
         <ul className={styles.menuList}>
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faHome} />
-            <span>Início</span>
+            <Link href="/" className={styles.link}>Início</Link>
           </li>
+
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faLeaf} />
-            <span><a href="/growVegetable">Adicionar Hortaliça</a></span>
+            <Link href="/growVegetable" className={styles.link}>Adicionar Hortaliça</Link>
           </li>
+
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faList} />
-            <span><a href="/vegetableList">Lista de Hortaliças</a></span>
+            <Link href="/vegetableList" className={styles.link}>Lista de Hortaliças</Link>
           </li>
+
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faCamera} />
-            <span>Câmeras</span>
+            <Link href="/cameras" className={styles.link}>Câmeras</Link>
           </li>
+
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faFileAlt} />
-            <span>Relatórios</span>
+            <Link href="/reports" className={styles.link}>Relatórios</Link>
           </li>
+
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faCog} />
-            <span>Configurações</span>
+            <Link href="/settings" className={styles.link}>Configurações</Link>
           </li>
+
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faSignOutAlt} />
-            <span>Sair</span>
+            <Link href="/logout" className={styles.link}>Sair</Link>
           </li>
         </ul>
-      </div>
+      </nav>
     </aside>
   );
 }
