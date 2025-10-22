@@ -8,36 +8,41 @@
   flex-direction: column;
   gap: 20px;
   min-width: 0;
-  height: 450px;
-  
+  height: 450px; /* pedido do usuário */
+  overflow: hidden; /* evita “vazar” conteúdo quando o grid rola */
 }
 
+/* HEADER */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 16px;
+  padding-bottom: 12px;
   border-bottom: 2px solid #f5f5f5;
+  min-height: 48px;
 }
 
 .headerLeft {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
+  min-width: 0; /* habilita truncamento */
+  flex: 1;
 }
 
 .iconContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 42px;
+  height: 42px;
   border-radius: 12px;
   background: linear-gradient(135deg, #667eea, #764ba2);
+  flex-shrink: 0;
 }
 
 .headerIcon {
-  font-size: 24px;
+  font-size: 20px;
   color: white;
 }
 
@@ -45,95 +50,100 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
 }
 
 .title {
   font-weight: 700;
   margin: 0;
   color: #212121;
-  font-size: 16px;
+  font-size: clamp(14px, 1.2vw, 16px);
   text-transform: uppercase;
   letter-spacing: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .vegetableName {
   color: #27ae60;
   font-weight: 600;
   text-transform: none;
-  font-size: 14px;
+  font-size: clamp(12px, 1.1vw, 14px);
 }
 
 .subtitle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: clamp(11px, 1vw, 12px);
   color: #666;
   font-weight: 500;
+  min-width: 0;
 }
 
 .subtitleIcon {
   font-size: 12px;
 }
 
+/* GRID COM SCROLL INTERNO */
 .sensorsGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-direction: column;   /* <<< empilha verticalmente */
   gap: 16px;
-  flex: 1;
-  overflow-y: auto;
   padding-right: 8px;
-  max-height: calc(100% - 100px);
+
+  flex: 1;
+  overflow: auto;           /* scroll interno se precisar */
+  max-height: calc(100% - 80px);
+  overscroll-behavior: contain;
 }
 
-/* Custom scrollbar */
-.sensorsGrid::-webkit-scrollbar {
-  width: 6px;
+/* Ajuste progressivo com media queries */
+@media (max-width: 1280px) {
+  .sensorsGrid { grid-template-columns: repeat(3, minmax(180px, 1fr)); }
+}
+@media (max-width: 992px) {
+  .sensorsGrid { grid-template-columns: repeat(2, minmax(170px, 1fr)); }
+}
+@media (max-width: 600px) {
+  .sensorsGrid { grid-template-columns: 1fr; }
 }
 
-.sensorsGrid::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
+/* Scrollbar custom */
+.sensorsGrid::-webkit-scrollbar { width: 6px; height: 6px; }
+.sensorsGrid::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 3px; }
+.sensorsGrid::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 3px; }
+.sensorsGrid::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 
-.sensorsGrid::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-
-.sensorsGrid::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
-}
-
+/* CARDS */
 .sensorCard {
   background: #f8f9fa;
   border: 2px solid #e9ecef;
   border-radius: 12px;
-  padding: 20px;
+  padding: clamp(14px, 1.4vw, 20px);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  transition: all 0.3s ease;
-  min-height: 140px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  min-height: 160px;
 }
 
 .sensorCard:hover {
   border-color: #667eea;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .sensorIcon {
-  font-size: 2.5rem;
+  font-size: clamp(1.6rem, 2.2vw, 2.5rem);
   color: #667eea;
-  margin-bottom: 12px;
-  transition: transform 0.3s ease;
+  margin-bottom: 10px;
+  transition: transform 0.25s ease;
 }
 
-.sensorCard:hover .sensorIcon {
-  transform: scale(1.1);
-}
+.sensorCard:hover .sensorIcon { transform: scale(1.06); }
 
 .sensorContent {
   flex: 1;
@@ -141,103 +151,72 @@
   flex-direction: column;
   justify-content: center;
   width: 100%;
+  min-width: 0;
 }
 
 .sensorLabel {
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
   color: #6c757d;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   font-weight: 500;
 }
 
 .sensorValue {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 1.8vw, 1.5rem);
   font-weight: 700;
   color: #212121;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  line-height: 1.15;
+  word-break: break-word;
 }
 
 .sensorStatus {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 0.95vw, 0.85rem);
   font-weight: 500;
   color: #6c757d;
 }
 
-.statusIcon {
-  font-size: 0.9rem;
-}
+.statusIcon { font-size: 0.95em; }
 
+/* LOADING */
 .loading {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 20px;
+  padding: 16px;
   color: #7f8c8d;
   font-size: 14px;
   font-style: italic;
-  flex: 1;
-  min-height: 200px;
+  flex: 0 0 auto;
 }
 
-/* Responsive design */
+/* MOBILE REFINES */
 @media (max-width: 768px) {
-  .container {
-    padding: 16px;
+  .container { padding: 16px; }
+  .header { padding-bottom: 10px; }
+  .headerLeft { gap: 10px; }
+
+  .iconContainer {
+    width: 38px; height: 38px; border-radius: 10px;
   }
-  
-  .sensorsGrid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 12px;
-    max-height: calc(100% - 80px);
-  }
-  
-  .sensorCard {
-    padding: 16px;
-    min-height: 120px;
-  }
-  
-  .sensorIcon {
-    font-size: 2rem;
-    margin-bottom: 8px;
-  }
-  
-  .sensorValue {
-    font-size: 1.3rem;
-  }
-  
-  .title {
-    font-size: 14px;
-  }
+  .headerIcon { font-size: 18px; }
+
+  .sensorCard { min-height: 120px; }
 }
 
+/* Extra pequeno */
 @media (max-width: 480px) {
-  .sensorsGrid {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    max-height: calc(100% - 70px);
-  }
-  
-  .sensorCard {
-    padding: 12px;
-    min-height: 100px;
-  }
-  
+  .sensorCard { min-height: 110px; }
+}
+
+/* Usuários que preferem menos animação */
+@media (prefers-reduced-motion: reduce) {
+  .sensorCard,
   .sensorIcon {
-    font-size: 1.8rem;
-  }
-  
-  .sensorValue {
-    font-size: 1.1rem;
-  }
-  
-  .sensorLabel {
-    font-size: 0.8rem;
-  }
-  
-  .sensorStatus {
-    font-size: 0.7rem;
+    transition: none;
   }
 }
