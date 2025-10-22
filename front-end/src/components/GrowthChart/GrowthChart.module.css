@@ -55,6 +55,13 @@
   letter-spacing: 1px;
 }
 
+.vegetableName {
+  color: #27ae60;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 16px;
+}
+
 .subtitle {
   display: flex;
   align-items: center;
@@ -117,4 +124,23 @@
 
 .legendIcon {
   font-size: 16px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #7f8c8d;
+  font-size: 14px;
+}
+
+.noData {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #95a5a6;
+  font-size: 14px;
+  font-style: italic;
 }

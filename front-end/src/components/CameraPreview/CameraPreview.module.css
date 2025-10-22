@@ -39,6 +39,13 @@
   overflow: hidden; text-overflow: ellipsis;
 }
 
+.vegetableName {
+  color: #27ae60;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 14px;
+}
+
 .subtitle { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #666; font-weight: 500; }
 .subtitleIcon { font-size: 12px; }
 

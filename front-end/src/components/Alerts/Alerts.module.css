@@ -30,6 +30,13 @@
   letter-spacing: 1px;
 }
 
+.vegetableName {
+  color: #27ae60;
+  font-weight: 600;
+  text-transform: none;
+  font-size: 14px;
+}
+
 .alertsList {
   display: flex;
   flex-direction: column;

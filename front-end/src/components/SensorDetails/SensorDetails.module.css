@@ -1,19 +1,243 @@
 .container {
   background: white;
-  padding: 16px;
-  border-radius: 8px;
+  padding: 24px;
+  border-radius: 12px;
   flex: 1;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  height: 450px;
+  
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f5f5f5;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.headerIcon {
+  font-size: 24px;
+  color: white;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .title {
-  font-weight: 600;
-  margin-bottom: 10px;
+  font-weight: 700;
+  margin: 0;
   color: #212121;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.detailItem {
-  margin-bottom: 6px;
+.vegetableName {
+  color: #27ae60;
+  font-weight: 600;
+  text-transform: none;
   font-size: 14px;
-  color: #333333;
+}
+
+.subtitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.subtitleIcon {
+  font-size: 12px;
+}
+
+.sensorsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 8px;
+  max-height: calc(100% - 100px);
+}
+
+/* Custom scrollbar */
+.sensorsGrid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sensorsGrid::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.sensorsGrid::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.sensorsGrid::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.sensorCard {
+  background: #f8f9fa;
+  border: 2px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.3s ease;
+  min-height: 140px;
+}
+
+.sensorCard:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sensorIcon {
+  font-size: 2.5rem;
+  color: #667eea;
+  margin-bottom: 12px;
+  transition: transform 0.3s ease;
+}
+
+.sensorCard:hover .sensorIcon {
+  transform: scale(1.1);
+}
+
+.sensorContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+}
+
+.sensorLabel {
+  font-size: 0.9rem;
+  color: #6c757d;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.sensorValue {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 8px;
+}
+
+.sensorStatus {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #6c757d;
+}
+
+.statusIcon {
+  font-size: 0.9rem;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #7f8c8d;
+  font-size: 14px;
+  font-style: italic;
+  flex: 1;
+  min-height: 200px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .sensorsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    max-height: calc(100% - 80px);
+  }
+  
+  .sensorCard {
+    padding: 16px;
+    min-height: 120px;
+  }
+  
+  .sensorIcon {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+  
+  .sensorValue {
+    font-size: 1.3rem;
+  }
+  
+  .title {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sensorsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    max-height: calc(100% - 70px);
+  }
+  
+  .sensorCard {
+    padding: 12px;
+    min-height: 100px;
+  }
+  
+  .sensorIcon {
+    font-size: 1.8rem;
+  }
+  
+  .sensorValue {
+    font-size: 1.1rem;
+  }
+  
+  .sensorLabel {
+    font-size: 0.8rem;
+  }
+  
+  .sensorStatus {
+    font-size: 0.7rem;
+  }
 }

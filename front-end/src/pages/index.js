@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import styles from '@/styles/Home.module.css';
 
 import Sidebar from '@/components/Sidebar/Sidebar';
 import Header from '@/components/Header/Header';
+import VegetableSelector from '@/components/VegetableSelector/VegetableSelector';
 import GrowthChart from '@/components/GrowthChart/GrowthChart';
 import Indicators from '@/components/Indicators/Indicators';
 import Alerts from '@/components/Alerts/Alerts';
@@ -10,24 +12,45 @@ import SensorDetails from '@/components/SensorDetails/SensorDetails';
 import RecentReports from '@/components/RecentReports/RecentReports';
 
 export default function Home() {
+  const [selectedVegetable, setSelectedVegetable] = useState(null);
+
+  const handleVegetableSelect = (vegetable) => {
+    setSelectedVegetable(vegetable);
+  };
+
   return (
     <div className={styles.dashboard}>
       <Sidebar />
       <main className={styles.mainContent}>
         <Header />
+        
+        {/* Seletor de Hortaliças */}
+        <div className={styles.selectorContainer}>
+          <VegetableSelector 
+            onVegetableSelect={handleVegetableSelect}
+            selectedVegetable={selectedVegetable}
+          />
+        </div>
+
         <div className={styles.top}>
           <div className={styles.chartArea}>
-            <GrowthChart />
+            <GrowthChart selectedVegetable={selectedVegetable} />
           </div>
           <div className={styles.rightColumn}>
-            <Indicators />
-            <Alerts />
+            <Indicators selectedVegetable={selectedVegetable} />
+            <Alerts selectedVegetable={selectedVegetable} />
           </div>
         </div>
         <div className={styles.bottom}>
-          <div className={styles.tile}><CameraPreview /></div>
-          <div className={styles.tile}><SensorDetails /></div>
-          <div className={styles.tile}><RecentReports /></div>
+          <div className={styles.tile}>
+            <CameraPreview selectedVegetable={selectedVegetable} />
+          </div>
+          <div className={styles.tile}>
+            <SensorDetails selectedVegetable={selectedVegetable} />
+          </div>
+          <div className={styles.tile}>
+            <RecentReports selectedVegetable={selectedVegetable} />
+          </div>
         </div>
       </main>
     </div>

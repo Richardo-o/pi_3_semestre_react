@@ -10,7 +10,7 @@ import {
   FaCog
 } from 'react-icons/fa';
 
-export default function CameraPreview() {
+export default function CameraPreview({ selectedVegetable }) {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -19,10 +19,22 @@ export default function CameraPreview() {
             <FaVideo className={styles.headerIcon} />
           </div>
           <div className={styles.headerContent}>
-            <h4 className={styles.title}>CÂMERAS - VISUALIZAÇÃO RÁPIDA</h4>
+            <h4 className={styles.title}>
+              CÂMERAS - VISUALIZAÇÃO RÁPIDA
+              {selectedVegetable && (
+                <span className={styles.vegetableName}>
+                  - {selectedVegetable.nome_hortalica}
+                </span>
+              )}
+            </h4>
             <div className={styles.subtitle}>
               <FaEye className={styles.subtitleIcon} />
-              <span>Monitoramento em tempo real</span>
+              <span>
+                {selectedVegetable ? 
+                  `Monitorando ${selectedVegetable.nome_hortalica}` : 
+                  'Monitoramento em tempo real'
+                }
+              </span>
             </div>
           </div>
         </div>

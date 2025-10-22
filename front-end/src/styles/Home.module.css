@@ -22,6 +22,12 @@
   color:#212121;
 }
 
+/* Container do seletor de hortaliças */
+.selectorContainer{
+  padding: var(--gap-lg) var(--gap-lg) 0;
+  min-width:0;
+}
+
 /* ===== Faixa superior: gráfico + coluna de indicadores/alertas ===== */
 /* Usa mais a largura: 2.2fr para o gráfico e 1fr pro painel direito */
 .top{
