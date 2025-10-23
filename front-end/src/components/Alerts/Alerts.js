@@ -11,36 +11,22 @@ import {
   FaBell
 } from 'react-icons/fa';
 
-export default function Alerts() {
-  const [waterLevel, setWaterLevel] = useState(null);
+export default function Alerts({ selectedVegetable }) {
 
-  useEffect(() => {
-    fetchWaterLevel();
-  }, []);
-
-  const fetchWaterLevel = async () => {
-    try {
-      // Busca o nível global da água via API
-      const response = await apiFetch('/water-level');
-      setWaterLevel(response.nivel_agua);
-    } catch (error) {
-      console.error('Erro ao carregar nível da água:', error);
-      // Fallback para valor padrão
-      setWaterLevel(75);
-    }
-  };
-
-  // Função para gerar alertas baseados no nível global da água
+  // Função para gerar alertas baseados no nível da hortaliça selecionada
   const getWaterAlerts = () => {
     const alerts = [];
 
-    if (waterLevel !== null) {
+    if (selectedVegetable && selectedVegetable.nivel && selectedVegetable.nivel.nivel_agua !== null && selectedVegetable.nivel.nivel_agua !== undefined) {
+      const waterLevel = selectedVegetable.nivel.nivel_agua;
+      const vegetableName = selectedVegetable.nome_hortalica;
+      
       if (waterLevel < 30) {
         alerts.push({
           type: 'danger',
           icon: FaTint,
           title: 'Nível de Água Crítico',
-          description: `${waterLevel}L - Sistema precisa de água urgentemente`,
+          description: `${vegetableName}: ${waterLevel}L - Precisa de água urgentemente`,
           time: 'Agora'
         });
       } else if (waterLevel < 50) {
@@ -48,7 +34,7 @@ export default function Alerts() {
           type: 'warning',
           icon: FaTint,
           title: 'Nível de Água Baixo',
-          description: `${waterLevel}L - Considere reabastecer o sistema`,
+          description: `${vegetableName}: ${waterLevel}L - Considere reabastecer`,
           time: 'Há 2 min'
         });
       } else if (waterLevel > 150) {
@@ -56,7 +42,7 @@ export default function Alerts() {
           type: 'warning',
           icon: FaTint,
           title: 'Nível de Água Alto',
-          description: `${waterLevel}L - Verifique drenagem do sistema`,
+          description: `${vegetableName}: ${waterLevel}L - Verifique drenagem`,
           time: 'Há 1 min'
         });
       } else {
@@ -64,10 +50,28 @@ export default function Alerts() {
           type: 'success',
           icon: FaTint,
           title: 'Nível de Água Ideal',
-          description: `${waterLevel}L - Sistema funcionando perfeitamente`,
+          description: `${vegetableName}: ${waterLevel}L - Funcionando perfeitamente`,
           time: 'Há 5 min'
         });
       }
+    } else if (selectedVegetable) {
+      // Se há hortaliça selecionada mas sem nível definido
+      alerts.push({
+        type: 'info',
+        icon: FaTint,
+        title: 'Nível de Água Não Definido',
+        description: `${selectedVegetable.nome_hortalica}: Defina o nível de água para monitoramento`,
+        time: 'Agora'
+      });
+    } else {
+      // Se não há hortaliça selecionada, mostra alerta genérico
+      alerts.push({
+        type: 'info',
+        icon: FaTint,
+        title: 'Selecione uma Hortaliça',
+        description: 'Escolha uma hortaliça para ver os níveis de água',
+        time: 'Agora'
+      });
     }
 
     // Alertas padrão do sistema

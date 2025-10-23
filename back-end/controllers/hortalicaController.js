@@ -49,7 +49,8 @@ const createHortalica = async (req, res) => {
             tempo_estimado, 
             tempo_real,
             fertilizantes || [], 
-            nivel?.nivel_agua
+            nivel?.nivel_agua || null,
+            nivel?.nivel_fertilizante || null
         );
         
         res.status(201).json({
@@ -94,11 +95,12 @@ const updateHortalica = async (req, res) => {
                 nivel 
             } = req.body;
 
-            // Extrair nivel_agua do objeto nivel
+            // Extrair níveis do objeto nivel
             const nivel_agua = nivel?.nivel_agua;
+            const nivel_fertilizante = nivel?.nivel_fertilizante;
 
             const updatedHortalica = await hortalicaService.updateHortalica(
-                id, nome_hortalica, tipo_hortalica, tempo_estimado, tempo_real, fertilizantes, nivel_agua
+                id, nome_hortalica, tipo_hortalica, tempo_estimado, tempo_real, fertilizantes, nivel_agua, nivel_fertilizante
             );
             
             res.status(200).json({

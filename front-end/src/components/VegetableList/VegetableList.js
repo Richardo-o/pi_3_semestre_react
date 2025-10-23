@@ -86,6 +86,11 @@ const VegetableList = () => {
         {fertilizantes.map((fert, index) => (
           <span key={index} className={styles.fertilizanteTag}>
             {fert.fertilizante}
+            {fert.quantidade && (
+              <span className={styles.fertilizanteQuantity}>
+                ({fert.quantidade}{fert.unidade || 'g'})
+              </span>
+            )}
           </span>
         ))}
       </div>
@@ -186,6 +191,24 @@ const VegetableList = () => {
                   </label>
                   <span className={styles.infoValue}>
                     {hortalica.tempo_real ? `${hortalica.tempo_real} dias` : "N/A"}
+                  </span>
+                </div>
+
+                <div className={styles.infoItem}>
+                  <label className={styles.infoLabel}>
+                    <FaTint /> Nível de Água
+                  </label>
+                  <span className={styles.infoValue}>
+                    {hortalica.nivel?.nivel_agua !== null && hortalica.nivel?.nivel_agua !== undefined ? `${hortalica.nivel.nivel_agua}L` : "Não definido"}
+                  </span>
+                </div>
+
+                <div className={styles.infoItem}>
+                  <label className={styles.infoLabel}>
+                    <FaFlask /> Nível de Fertilizante
+                  </label>
+                  <span className={styles.infoValue}>
+                    {hortalica.nivel?.nivel_fertilizante !== null && hortalica.nivel?.nivel_fertilizante !== undefined ? `${hortalica.nivel.nivel_fertilizante}%` : "Não definido"}
                   </span>
                 </div>
 
