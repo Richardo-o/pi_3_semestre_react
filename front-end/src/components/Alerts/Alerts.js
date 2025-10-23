@@ -1,4 +1,6 @@
 import styles from './Alerts.module.css';
+import { useState, useEffect } from 'react';
+import { apiFetch } from '@/services/api';
 import { 
   FaExclamationTriangle, 
   FaThermometerHalf, 
@@ -9,53 +11,36 @@ import {
   FaBell
 } from 'react-icons/fa';
 
-export default function Alerts({ selectedVegetable }) {
-  // Função para gerar alertas baseados na hortaliça selecionada
-  const getVegetableAlerts = () => {
-    if (!selectedVegetable) {
-      return [
-        {
-          type: 'warning',
-          icon: FaTint,
-          title: 'Baixa Umidade',
-          description: 'Nível abaixo de 40%',
-          time: 'Há 5 min'
-        },
-        {
-          type: 'danger',
-          icon: FaThermometerHalf,
-          title: 'Temperatura Elevada',
-          description: 'Acima de 30°C',
-          time: 'Há 12 min'
-        },
-        {
-          type: 'info',
-          icon: FaSun,
-          title: 'Luz Insuficiente',
-          description: 'Menos de 500 lux',
-          time: 'Há 1 hora'
-        },
-        {
-          type: 'success',
-          icon: FaLeaf,
-          title: 'Crescimento Ótimo',
-          description: 'Taxa de crescimento ideal',
-          time: 'Há 2 horas'
-        }
-      ];
-    }
+export default function Alerts() {
+  const [waterLevel, setWaterLevel] = useState(null);
 
+  useEffect(() => {
+    fetchWaterLevel();
+  }, []);
+
+  const fetchWaterLevel = async () => {
+    try {
+      // Busca o nível global da água via API
+      const response = await apiFetch('/water-level');
+      setWaterLevel(response.nivel_agua);
+    } catch (error) {
+      console.error('Erro ao carregar nível da água:', error);
+      // Fallback para valor padrão
+      setWaterLevel(75);
+    }
+  };
+
+  // Função para gerar alertas baseados no nível global da água
+  const getWaterAlerts = () => {
     const alerts = [];
-    
-    // Alerta baseado no nível de água
-    if (selectedVegetable.nivel?.nivel_agua) {
-      const waterLevel = selectedVegetable.nivel.nivel_agua;
+
+    if (waterLevel !== null) {
       if (waterLevel < 30) {
         alerts.push({
           type: 'danger',
           icon: FaTint,
           title: 'Nível de Água Crítico',
-          description: `${waterLevel}% - ${selectedVegetable.nome_hortalica} precisa de água`,
+          description: `${waterLevel}L - Sistema precisa de água urgentemente`,
           time: 'Agora'
         });
       } else if (waterLevel < 50) {
@@ -63,59 +48,57 @@ export default function Alerts({ selectedVegetable }) {
           type: 'warning',
           icon: FaTint,
           title: 'Nível de Água Baixo',
-          description: `${waterLevel}% - Considere regar ${selectedVegetable.nome_hortalica}`,
+          description: `${waterLevel}L - Considere reabastecer o sistema`,
           time: 'Há 2 min'
         });
-      } else if (waterLevel > 90) {
+      } else if (waterLevel > 150) {
         alerts.push({
           type: 'warning',
           icon: FaTint,
           title: 'Nível de Água Alto',
-          description: `${waterLevel}% - Verifique drenagem`,
+          description: `${waterLevel}L - Verifique drenagem do sistema`,
           time: 'Há 1 min'
         });
-      }
-    }
-
-    // Alerta baseado no tempo de crescimento
-    if (selectedVegetable.tempo_estimado && selectedVegetable.tempo_real) {
-      const progress = (selectedVegetable.tempo_real / selectedVegetable.tempo_estimado) * 100;
-      if (progress >= 90) {
+      } else {
         alerts.push({
           type: 'success',
-          icon: FaLeaf,
-          title: 'Pronto para Colheita',
-          description: `${selectedVegetable.nome_hortalica} atingiu ${Math.round(progress)}% do crescimento`,
+          icon: FaTint,
+          title: 'Nível de Água Ideal',
+          description: `${waterLevel}L - Sistema funcionando perfeitamente`,
           time: 'Há 5 min'
         });
       }
     }
 
-    // Se não há alertas específicos, mostrar alertas padrão
-    if (alerts.length === 0) {
-      alerts.push({
+    // Alertas padrão do sistema
+    alerts.push(
+      {
         type: 'info',
-        icon: FaLeaf,
-        title: 'Crescimento Normal',
-        description: `${selectedVegetable.nome_hortalica} está se desenvolvendo bem`,
+        icon: FaThermometerHalf,
+        title: 'Temperatura Estável',
+        description: '24°C - Condições ideais',
         time: 'Há 10 min'
-      });
-    }
+      },
+      {
+        type: 'info',
+        icon: FaSun,
+        title: 'Luminosidade Adequada',
+        description: '800 lux - Luz suficiente',
+        time: 'Há 15 min'
+      }
+    );
 
     return alerts;
   };
 
-  const alerts = getVegetableAlerts();
+  const alerts = getWaterAlerts();
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <FaBell className={styles.headerIcon} />
         <h4 className={styles.title}>
-          ALERTAS
-          {selectedVegetable && (
-            <span className={styles.vegetableName}> - {selectedVegetable.nome_hortalica}</span>
-          )}
+          ALERTAS DO SISTEMA
         </h4>
       </div>
       

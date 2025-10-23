@@ -1,5 +1,5 @@
 // src/components/VegetableForm/VegetableForm.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaLeaf,
   FaClock,
@@ -26,11 +26,32 @@ const VegetableForm = () => {
     tempo_real: "",
     tipo_hortalica: "",
     fertilizantes: [{ fertilizante: "" }],
-    nivel: { nivel_agua: 50 },
   });
 
   const [errors, setErrors] = useState({});
+  const [globalWaterLevel, setGlobalWaterLevel] = useState(null);
+  const [loadingWaterLevel, setLoadingWaterLevel] = useState(false);
   const tipoOptions = ["Folhosa", "Fruto", "Raiz", "Bulbo", "Leguminosa", "Outros"];
+
+  // Busca o nível global da água quando o componente carrega
+  useEffect(() => {
+    fetchGlobalWaterLevel();
+  }, []);
+
+  const fetchGlobalWaterLevel = async () => {
+    setLoadingWaterLevel(true);
+    try {
+      // Busca o nível global da água via API
+      const response = await apiFetch('/water-level');
+      setGlobalWaterLevel(response.nivel_agua);
+    } catch (error) {
+      console.error('Erro ao carregar nível global da água:', error);
+      // Se não conseguir buscar, usa um valor padrão
+      setGlobalWaterLevel(75);
+    } finally {
+      setLoadingWaterLevel(false);
+    }
+  };
 
   function setField(path, value) {
     setForm((prev) => {
@@ -57,8 +78,6 @@ const VegetableForm = () => {
     if (te !== null && (isNaN(te) || te < 0)) e.tempo_estimado = "Valor inválido.";
     if (tr !== null && (isNaN(tr) || tr < 0)) e.tempo_real = "Valor inválido.";
 
-    const na = Number(form.nivel.nivel_agua);
-    if (isNaN(na) || na < 0 || na > 100) e.nivel_agua = "0 a 100.";
 
     form.fertilizantes.forEach((f, idx) => {
       if (f.fertilizante && !f.fertilizante.trim())
@@ -90,7 +109,6 @@ const VegetableForm = () => {
       tempo_real: "",
       tipo_hortalica: "",
       fertilizantes: [{ fertilizante: "" }],
-      nivel: { nivel_agua: 50 },
     });
     setErrors({});
   }
@@ -99,16 +117,19 @@ const VegetableForm = () => {
     e.preventDefault();
     if (!validate()) return;
 
-    const payload = {
-      nome_hortalica: form.nome_hortalica.trim(),
-      tempo_estimado: form.tempo_estimado === "" ? null : Number(form.tempo_estimado),
-      tempo_real: form.tempo_real === "" ? null : Number(form.tempo_real),
-      tipo_hortalica: form.tipo_hortalica.trim(),
-      fertilizantes: form.fertilizantes
-        .map((f) => ({ fertilizante: (f.fertilizante || "").trim() }))
-        .filter((f) => f.fertilizante !== ""),
-      nivel: { nivel_agua: Number(form.nivel.nivel_agua) },
-    };
+   const payload = {
+  nome_hortalica: form.nome_hortalica.trim(),
+  tempo_estimado: form.tempo_estimado === "" ? null : Number(form.tempo_estimado),
+  tempo_real: form.tempo_real === "" ? null : Number(form.tempo_real),
+  tipo_hortalica: form.tipo_hortalica.trim(),
+  fertilizantes: form.fertilizantes
+    .map((f) => ({ fertilizante: (f.fertilizante || "").trim() }))
+    .filter((f) => f.fertilizante !== ""),
+  nivel: {
+    nivel_agua: globalWaterLevel
+  }
+};
+
 
     try {
       // Se seu back for SEM prefixo /api:
@@ -214,24 +235,6 @@ const VegetableForm = () => {
             )}
           </div>
 
-          {/* Nível de água */}
-          <div className={`${styles.field} ${styles.full}`}>
-            <label className={`${styles.label} ${styles.rangeLabel}`}>
-              <FaTint /> Nível de água (%): <span className={styles.badge}>{form.nivel.nivel_agua}%</span>
-            </label>
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={form.nivel.nivel_agua}
-              onChange={(e) => setField("nivel.nivel_agua", Number(e.target.value))}
-              className={styles.range}
-            />
-            {errors.nivel_agua && (
-              <span className={`${styles.help} ${styles.error}`}>{errors.nivel_agua}</span>
-            )}
-          </div>
         </div>
 
         {/* Fertilizantes */}
@@ -287,6 +290,11 @@ const VegetableForm = () => {
 
         <p className={styles.foot}>
           Dica: Campos marcados com * são obrigatórios. Você pode deixar tempos em branco para enviar como <code>null</code>.
+          {globalWaterLevel !== null && (
+            <span className={styles.waterLevelInfo}>
+              <br />💧 Nível global da água: <strong>{globalWaterLevel}L</strong> será aplicado a esta hortaliça.
+            </span>
+          )}
         </p>
       </form>
     </div>
