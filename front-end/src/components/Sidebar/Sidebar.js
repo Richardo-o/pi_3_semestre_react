@@ -1,7 +1,7 @@
 // components/Sidebar/Sidebar.tsx
-import Link from 'next/link';
-import styles from './Sidebar.module.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Link from "next/link";
+import styles from "./Sidebar.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faHome,
   faLeaf,
@@ -9,8 +9,8 @@ import {
   faFileAlt,
   faCog,
   faSignOutAlt,
-  faList
-} from '@fortawesome/free-solid-svg-icons';
+  faList,
+} from "@fortawesome/free-solid-svg-icons";
 
 export default function Sidebar() {
   return (
@@ -21,38 +21,48 @@ export default function Sidebar() {
         <ul className={styles.menuList}>
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faHome} />
-            <Link href="/" className={styles.link}>Início</Link>
+            <Link href="/" className={styles.link}>
+              Início
+            </Link>
           </li>
 
-          <li className={styles.menuItem}>
-            <FontAwesomeIcon icon={faLeaf} />
-            <Link href="/growVegetable" className={styles.link}>Adicionar Hortaliça</Link>
-          </li>
+          <Link href="/growVegetable">
+            <li className={styles.menuItem}>
+              <FontAwesomeIcon icon={faLeaf} />
+              <div className={styles.link}>Adicionar Hortaliça</div>
+            </li>
+          </Link>
+          <Link href="/vegetableList">
+            <li className={styles.menuItem}>
+              <FontAwesomeIcon icon={faList} />
+              <div className={styles.link}>Lista de Hortaliças</div>
+            </li>
+          </Link>
+          <Link href="/cameras">
+            <li className={styles.menuItem}>
+              <FontAwesomeIcon icon={faCamera} />
+              <div className={styles.link}>Câmeras</div>
+            </li>
+          </Link>
+          <Link href="/reports">
+            <li className={styles.menuItem}>
+              <FontAwesomeIcon icon={faFileAlt} />
+              <div className={styles.link}>Relatórios</div>
+            </li>
+          </Link>
+          <Link href="/settings">
+            <li className={styles.menuItem}>
+              <FontAwesomeIcon icon={faCog} />
+              <div className={styles.link}>Configurações</div>
+            </li>
+          </Link>
 
-          <li className={styles.menuItem}>
-            <FontAwesomeIcon icon={faList} />
-            <Link href="/vegetableList" className={styles.link}>Lista de Hortaliças</Link>
-          </li>
-
-          <li className={styles.menuItem}>
-            <FontAwesomeIcon icon={faCamera} />
-            <Link href="/cameras" className={styles.link}>Câmeras</Link>
-          </li>
-
-          <li className={styles.menuItem}>
-            <FontAwesomeIcon icon={faFileAlt} />
-            <Link href="/reports" className={styles.link}>Relatórios</Link>
-          </li>
-
-          <li className={styles.menuItem}>
-            <FontAwesomeIcon icon={faCog} />
-            <Link href="/settings" className={styles.link}>Configurações</Link>
-          </li>
-
-          <li className={styles.menuItem}>
-            <FontAwesomeIcon icon={faSignOutAlt} />
-            <Link href="/logout" className={styles.link}>Sair</Link>
-          </li>
+          <Link href="/logout">
+            <li className={styles.menuItem}>
+              <FontAwesomeIcon icon={faSignOutAlt} />
+              <div className={styles.link}>Sair</div>
+            </li>
+          </Link>
         </ul>
       </nav>
     </aside>

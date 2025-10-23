@@ -189,14 +189,6 @@ const VegetableList = () => {
                   </span>
                 </div>
 
-                <div className={styles.infoItem}>
-                  <label className={styles.infoLabel}>
-                    <FaTint /> Nível de Água
-                  </label>
-                  <span className={styles.infoValue}>
-                    {hortalica.nivel?.nivel_agua ? `${hortalica.nivel.nivel_agua}%` : "N/A"}
-                  </span>
-                </div>
               </div>
 
               {/* Fertilizantes */}

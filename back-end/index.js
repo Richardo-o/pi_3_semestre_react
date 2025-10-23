@@ -5,6 +5,7 @@ import Hortalica from "./models/Hortalica.js";
 import User from "./models/User.js";
 import userRoutes from "./routes/userRoutes.js";
 import hortalicaRoutes from "./routes/hortalicaRoutes.js";
+import waterLevelRoutes from "./routes/waterLevelRoutes.js";
 import path from "path"; 
 import { fileURLToPath } from 'url';
 
@@ -34,6 +35,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use("/", userRoutes)
 app.use("/", hortalicaRoutes)
+app.use("/", waterLevelRoutes)
 
 // ✅ Caminho absoluto para static files
 const __filename = fileURLToPath(import.meta.url);

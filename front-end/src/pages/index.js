@@ -5,6 +5,7 @@ import Sidebar from '@/components/Sidebar/Sidebar';
 import Header from '@/components/Header/Header';
 import VegetableSelector from '@/components/VegetableSelector/VegetableSelector';
 import GrowthChart from '@/components/GrowthChart/GrowthChart';
+import WaterLevelChart from '@/components/WaterLevelChart/WaterLevelChart';
 import Indicators from '@/components/Indicators/Indicators';
 import Alerts from '@/components/Alerts/Alerts';
 import CameraPreview from '@/components/CameraPreview/CameraPreview';
@@ -35,10 +36,11 @@ export default function Home() {
         <div className={styles.top}>
           <div className={styles.chartArea}>
             <GrowthChart selectedVegetable={selectedVegetable} />
+            <WaterLevelChart />
           </div>
           <div className={styles.rightColumn}>
-            <Indicators selectedVegetable={selectedVegetable} />
-            <Alerts selectedVegetable={selectedVegetable} />
+            <Indicators />
+            <Alerts />
           </div>
         </div>
         <div className={styles.bottom}>

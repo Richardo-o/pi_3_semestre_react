@@ -1,6 +1,6 @@
 import styles from './Indicators.module.css';
 import { useState, useEffect } from 'react';
-import { getVegetableSensorData } from '@/services/api';
+import { getVegetableSensorData, apiFetch } from '@/services/api';
 import { 
   FaThermometerHalf, 
   FaTint, 
@@ -13,83 +13,64 @@ import {
   FaWind
 } from 'react-icons/fa';
 
-export default function Indicators({ selectedVegetable }) {
-  const [sensorData, setSensorData] = useState(null);
+export default function Indicators() {
+  const [waterLevel, setWaterLevel] = useState(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (selectedVegetable) {
-      fetchSensorData();
-    } else {
-      setSensorData(null);
-    }
-  }, [selectedVegetable]);
+    fetchWaterLevel();
+  }, []);
 
-  const fetchSensorData = async () => {
-    if (!selectedVegetable?._id) return;
-    
+  const fetchWaterLevel = async () => {
     setLoading(true);
     try {
-      const data = await getVegetableSensorData(selectedVegetable._id);
-      setSensorData(data);
+      // Busca o nível global da água via API
+      const response = await apiFetch('/water-level');
+      setWaterLevel(response.nivel_agua);
     } catch (error) {
-      console.error('Erro ao carregar dados dos sensores:', error);
+      console.error('Erro ao carregar nível da água:', error);
+      // Fallback para valor padrão
+      setWaterLevel(75);
     } finally {
       setLoading(false);
     }
   };
 
-  // Função para calcular o nível de água baseado na hortaliça selecionada
+  // Função para obter o nível global da água em litros
   const getWaterLevel = () => {
-    if (sensorData?.nivel_agua) {
-      return `${Math.round(sensorData.nivel_agua)}%`;
+    if (waterLevel !== null) {
+      return `${waterLevel}L`;
     }
-    if (selectedVegetable?.nivel?.nivel_agua) {
-      return `${selectedVegetable.nivel.nivel_agua}%`;
-    }
-    return '70%';
+    return '75L';
   };
 
-  // Função para obter o status baseado na hortaliça selecionada
+  // Função para obter o status baseado no nível global da água
   const getWaterStatus = () => {
-    const level = sensorData?.nivel_agua || selectedVegetable?.nivel?.nivel_agua;
-    if (level) {
-      if (level >= 60 && level <= 80) return 'Perfeita';
-      if (level < 60) return 'Baixa';
-      if (level > 80) return 'Alta';
+    if (waterLevel !== null) {
+      if (waterLevel >= 50 && waterLevel <= 150) return 'Perfeita';
+      if (waterLevel < 50) return 'Baixa';
+      if (waterLevel > 150) return 'Alta';
     }
     return 'Perfeita';
   };
 
   // Função para obter temperatura
   const getTemperature = () => {
-    if (sensorData?.temperatura) {
-      return `${Math.round(sensorData.temperatura)}°C`;
-    }
     return '24°C';
   };
 
   // Função para obter luminosidade
   const getLuminosity = () => {
-    if (sensorData?.luminosidade) {
-      return `${Math.round(sensorData.luminosidade)} lux`;
-    }
     return '800 lux';
   };
 
   // Função para obter pH do solo
   const getSoilPH = () => {
-    if (sensorData?.ph_solo) {
-      return `${sensorData.ph_solo.toFixed(1)}`;
-    }
     return '6.5';
   };
 
   // Função para obter condutividade
   const getConductivity = () => {
-    if (sensorData?.condutividade) {
-      return `${sensorData.condutividade.toFixed(1)} mS/cm`;
-    }
     return '1.5 mS/cm';
   };
 
@@ -114,7 +95,7 @@ export default function Indicators({ selectedVegetable }) {
           <FaTint className={styles.icon} />
         </div>
         <div className={styles.content}>
-          <div className={styles.label}>Nível de Água</div>
+          <div className={styles.label}>Nível Global da Água</div>
           <div className={styles.value}>{getWaterLevel()}</div>
           <div className={styles.status}>
             <FaCheckCircle className={styles.statusIcon} />
@@ -143,20 +124,10 @@ export default function Indicators({ selectedVegetable }) {
         </div>
         <div className={styles.content}>
           <div className={styles.label}>Crescimento</div>
-          <div className={styles.value}>
-            {selectedVegetable ? 
-              `${Math.round((selectedVegetable.tempo_real || selectedVegetable.tempo_estimado || 0) / 7 * 100)}%` : 
-              '85%'
-            }
-          </div>
+          <div className={styles.value}>85%</div>
           <div className={styles.status}>
             <FaSeedling className={styles.statusIcon} />
-            <span>
-              {selectedVegetable ? 
-                `${selectedVegetable.tempo_real || selectedVegetable.tempo_estimado || 'N/A'} dias` : 
-                'Excelente'
-              }
-            </span>
+            <span>Excelente</span>
           </div>
         </div>
       </div>
