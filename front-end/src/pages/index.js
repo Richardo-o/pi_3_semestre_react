@@ -36,11 +36,11 @@ export default function Home() {
         <div className={styles.top}>
           <div className={styles.chartArea}>
             <GrowthChart selectedVegetable={selectedVegetable} />
-            <WaterLevelChart />
+            <WaterLevelChart selectedVegetable={selectedVegetable} />
           </div>
           <div className={styles.rightColumn}>
-            <Indicators />
-            <Alerts />
+            <Indicators selectedVegetable={selectedVegetable} />
+            <Alerts selectedVegetable={selectedVegetable} />
           </div>
         </div>
         <div className={styles.bottom}>

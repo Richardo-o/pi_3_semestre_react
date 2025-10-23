@@ -13,45 +13,43 @@ import {
   FaWind
 } from 'react-icons/fa';
 
-export default function Indicators() {
-  const [waterLevel, setWaterLevel] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    fetchWaterLevel();
-  }, []);
-
-  const fetchWaterLevel = async () => {
-    setLoading(true);
-    try {
-      // Busca o nível global da água via API
-      const response = await apiFetch('/water-level');
-      setWaterLevel(response.nivel_agua);
-    } catch (error) {
-      console.error('Erro ao carregar nível da água:', error);
-      // Fallback para valor padrão
-      setWaterLevel(75);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Função para obter o nível global da água em litros
+export default function Indicators({ selectedVegetable }) {
+  // Função para obter o nível de água da hortaliça selecionada
   const getWaterLevel = () => {
-    if (waterLevel !== null) {
-      return `${waterLevel}L`;
+    if (selectedVegetable && selectedVegetable.nivel && selectedVegetable.nivel.nivel_agua !== null && selectedVegetable.nivel.nivel_agua !== undefined) {
+      return `${selectedVegetable.nivel.nivel_agua}L`;
     }
-    return '75L';
+    return 'Não definido';
   };
 
-  // Função para obter o status baseado no nível global da água
+  // Função para obter o status baseado no nível de água da hortaliça
   const getWaterStatus = () => {
-    if (waterLevel !== null) {
-      if (waterLevel >= 50 && waterLevel <= 150) return 'Perfeita';
-      if (waterLevel < 50) return 'Baixa';
-      if (waterLevel > 150) return 'Alta';
+    if (selectedVegetable && selectedVegetable.nivel && selectedVegetable.nivel.nivel_agua !== null && selectedVegetable.nivel.nivel_agua !== undefined) {
+      const level = selectedVegetable.nivel.nivel_agua;
+      if (level >= 50 && level <= 150) return 'Perfeita';
+      if (level < 50) return 'Baixa';
+      if (level > 150) return 'Alta';
     }
-    return 'Perfeita';
+    return 'Não definido';
+  };
+
+  // Função para obter o nível de fertilizante da hortaliça selecionada
+  const getFertilizerLevel = () => {
+    if (selectedVegetable && selectedVegetable.nivel && selectedVegetable.nivel.nivel_fertilizante !== null && selectedVegetable.nivel.nivel_fertilizante !== undefined) {
+      return `${selectedVegetable.nivel.nivel_fertilizante}%`;
+    }
+    return 'Não definido';
+  };
+
+  // Função para obter o status do fertilizante
+  const getFertilizerStatus = () => {
+    if (selectedVegetable && selectedVegetable.nivel && selectedVegetable.nivel.nivel_fertilizante !== null && selectedVegetable.nivel.nivel_fertilizante !== undefined) {
+      const level = selectedVegetable.nivel.nivel_fertilizante;
+      if (level >= 40 && level <= 80) return 'Adequado';
+      if (level < 40) return 'Baixo';
+      if (level > 80) return 'Alto';
+    }
+    return 'Não definido';
   };
 
   // Função para obter temperatura
@@ -95,7 +93,7 @@ export default function Indicators() {
           <FaTint className={styles.icon} />
         </div>
         <div className={styles.content}>
-          <div className={styles.label}>Nível Global da Água</div>
+          <div className={styles.label}>Nível de Água</div>
           <div className={styles.value}>{getWaterLevel()}</div>
           <div className={styles.status}>
             <FaCheckCircle className={styles.statusIcon} />
@@ -123,11 +121,11 @@ export default function Indicators() {
           <FaLeaf className={styles.icon} />
         </div>
         <div className={styles.content}>
-          <div className={styles.label}>Crescimento</div>
-          <div className={styles.value}>85%</div>
+          <div className={styles.label}>Nível de Fertilizante</div>
+          <div className={styles.value}>{getFertilizerLevel()}</div>
           <div className={styles.status}>
-            <FaSeedling className={styles.statusIcon} />
-            <span>Excelente</span>
+            <FaCheckCircle className={styles.statusIcon} />
+            <span>{getFertilizerStatus()}</span>
           </div>
         </div>
       </div>

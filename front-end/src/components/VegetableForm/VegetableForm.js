@@ -25,33 +25,16 @@ const VegetableForm = () => {
     tempo_estimado: "",
     tempo_real: "",
     tipo_hortalica: "",
-    fertilizantes: [{ fertilizante: "" }],
+    fertilizantes: [{ fertilizante: "", quantidade: "", unidade: "g" }],
+    nivel: {
+      nivel_agua: "",
+      nivel_fertilizante: ""
+    }
   });
 
   const [errors, setErrors] = useState({});
-  const [globalWaterLevel, setGlobalWaterLevel] = useState(null);
-  const [loadingWaterLevel, setLoadingWaterLevel] = useState(false);
   const tipoOptions = ["Folhosa", "Fruto", "Raiz", "Bulbo", "Leguminosa", "Outros"];
 
-  // Busca o nível global da água quando o componente carrega
-  useEffect(() => {
-    fetchGlobalWaterLevel();
-  }, []);
-
-  const fetchGlobalWaterLevel = async () => {
-    setLoadingWaterLevel(true);
-    try {
-      // Busca o nível global da água via API
-      const response = await apiFetch('/water-level');
-      setGlobalWaterLevel(response.nivel_agua);
-    } catch (error) {
-      console.error('Erro ao carregar nível global da água:', error);
-      // Se não conseguir buscar, usa um valor padrão
-      setGlobalWaterLevel(75);
-    } finally {
-      setLoadingWaterLevel(false);
-    }
-  };
 
   function setField(path, value) {
     setForm((prev) => {
@@ -123,10 +106,15 @@ const VegetableForm = () => {
   tempo_real: form.tempo_real === "" ? null : Number(form.tempo_real),
   tipo_hortalica: form.tipo_hortalica.trim(),
   fertilizantes: form.fertilizantes
-    .map((f) => ({ fertilizante: (f.fertilizante || "").trim() }))
+    .map((f) => ({ 
+      fertilizante: (f.fertilizante || "").trim(),
+      quantidade: f.quantidade || 0,
+      unidade: f.unidade || "g"
+    }))
     .filter((f) => f.fertilizante !== ""),
   nivel: {
-    nivel_agua: globalWaterLevel
+    nivel_agua: (form.nivel?.nivel_agua === "" || form.nivel?.nivel_agua === null || form.nivel?.nivel_agua === undefined) ? null : Number(form.nivel.nivel_agua),
+    nivel_fertilizante: (form.nivel?.nivel_fertilizante === "" || form.nivel?.nivel_fertilizante === null || form.nivel?.nivel_fertilizante === undefined) ? null : Number(form.nivel.nivel_fertilizante)
   }
 };
 
@@ -235,6 +223,40 @@ const VegetableForm = () => {
             )}
           </div>
 
+          {/* Nível de água */}
+          <div className={styles.field}>
+            <label className={styles.label}><FaTint /> Nível de água (L)</label>
+            <input
+              type="number"
+              min={0}
+              max={200}
+              className={`${styles.input} ${errors.nivel_agua ? styles.isError : ""}`}
+              placeholder="Ex.: 75"
+              value={form.nivel?.nivel_agua || ""}
+              onChange={(e) => setField("nivel.nivel_agua", e.target.value)}
+            />
+            {errors.nivel_agua && (
+              <span className={`${styles.help} ${styles.error}`}>{errors.nivel_agua}</span>
+            )}
+          </div>
+
+          {/* Nível de fertilizante */}
+          <div className={styles.field}>
+            <label className={styles.label}><FaFlask /> Nível de fertilizante (%)</label>
+            <input
+              type="number"
+              min={0}
+              max={100}
+              className={`${styles.input} ${errors.nivel_fertilizante ? styles.isError : ""}`}
+              placeholder="Ex.: 50"
+              value={form.nivel?.nivel_fertilizante || ""}
+              onChange={(e) => setField("nivel.nivel_fertilizante", e.target.value)}
+            />
+            {errors.nivel_fertilizante && (
+              <span className={`${styles.help} ${styles.error}`}>{errors.nivel_fertilizante}</span>
+            )}
+          </div>
+
         </div>
 
         {/* Fertilizantes */}
@@ -259,12 +281,48 @@ const VegetableForm = () => {
                     setForm((prev) => {
                       const next = { ...prev };
                       const arr = [...next.fertilizantes];
-                      arr[idx] = { fertilizante: val };
+                      arr[idx] = { ...arr[idx], fertilizante: val };
                       next.fertilizantes = arr;
                       return next;
                     });
                   }}
                 />
+                <input
+                  type="number"
+                  min={0}
+                  className={`${styles.input} ${styles.quantity}`}
+                  placeholder="Qtd"
+                  value={item.quantidade}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((prev) => {
+                      const next = { ...prev };
+                      const arr = [...next.fertilizantes];
+                      arr[idx] = { ...arr[idx], quantidade: val };
+                      next.fertilizantes = arr;
+                      return next;
+                    });
+                  }}
+                />
+                <select
+                  className={`${styles.input} ${styles.unit}`}
+                  value={item.unidade}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((prev) => {
+                      const next = { ...prev };
+                      const arr = [...next.fertilizantes];
+                      arr[idx] = { ...arr[idx], unidade: val };
+                      next.fertilizantes = arr;
+                      return next;
+                    });
+                  }}
+                >
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="L">L</option>
+                </select>
                 <button
                   type="button"
                   aria-label={`Remover fertilizante #${idx + 1}`}
@@ -290,11 +348,7 @@ const VegetableForm = () => {
 
         <p className={styles.foot}>
           Dica: Campos marcados com * são obrigatórios. Você pode deixar tempos em branco para enviar como <code>null</code>.
-          {globalWaterLevel !== null && (
-            <span className={styles.waterLevelInfo}>
-              <br />💧 Nível global da água: <strong>{globalWaterLevel}L</strong> será aplicado a esta hortaliça.
-            </span>
-          )}
+          Cada hortaliça terá seu próprio nível de água e fertilizante.
         </p>
       </form>
     </div>

@@ -32,8 +32,11 @@ const VegetableEdit = () => {
     tempo_estimado: "",
     tempo_real: "",
     tipo_hortalica: "",
-    fertilizantes: [{ fertilizante: "" }],
-    nivel: { nivel_agua: 50 },
+    fertilizantes: [{ fertilizante: "", quantidade: "", unidade: "g" }],
+    nivel: { 
+      nivel_agua: "",
+      nivel_fertilizante: ""
+    },
   });
 
   const [errors, setErrors] = useState({});
@@ -60,10 +63,15 @@ const VegetableEdit = () => {
           tempo_real: hortalica.tempo_real || "",
           tipo_hortalica: hortalica.tipo_hortalica || "",
           fertilizantes: hortalica.fertilizantes && hortalica.fertilizantes.length > 0 
-            ? hortalica.fertilizantes 
-            : [{ fertilizante: "" }],
+            ? hortalica.fertilizantes.map(f => ({
+                fertilizante: f.fertilizante || "",
+                quantidade: f.quantidade || "",
+                unidade: f.unidade || "g"
+              }))
+            : [{ fertilizante: "", quantidade: "", unidade: "g" }],
           nivel: { 
-            nivel_agua: hortalica.nivel?.nivel_agua || 50 
+            nivel_agua: hortalica.nivel?.nivel_agua || "",
+            nivel_fertilizante: hortalica.nivel?.nivel_fertilizante || ""
           },
         });
       }
@@ -120,7 +128,7 @@ const VegetableEdit = () => {
   function addFertilizante() {
     setForm((prev) => ({
       ...prev,
-      fertilizantes: [...prev.fertilizantes, { fertilizante: "" }],
+      fertilizantes: [...prev.fertilizantes, { fertilizante: "", quantidade: "", unidade: "g" }],
     }));
   }
 
@@ -148,9 +156,16 @@ const VegetableEdit = () => {
       tempo_real: form.tempo_real === "" ? null : Number(form.tempo_real),
       tipo_hortalica: form.tipo_hortalica.trim(),
       fertilizantes: form.fertilizantes
-        .map((f) => ({ fertilizante: (f.fertilizante || "").trim() }))
+        .map((f) => ({ 
+          fertilizante: (f.fertilizante || "").trim(),
+          quantidade: f.quantidade || 0,
+          unidade: f.unidade || "g"
+        }))
         .filter((f) => f.fertilizante !== ""),
-      nivel: { nivel_agua: Number(form.nivel.nivel_agua) },
+      nivel: { 
+        nivel_agua: (form.nivel?.nivel_agua === "" || form.nivel?.nivel_agua === null || form.nivel?.nivel_agua === undefined) ? null : Number(form.nivel.nivel_agua),
+        nivel_fertilizante: (form.nivel?.nivel_fertilizante === "" || form.nivel?.nivel_fertilizante === null || form.nivel?.nivel_fertilizante === undefined) ? null : Number(form.nivel.nivel_fertilizante)
+      },
     };
 
     try {
@@ -286,21 +301,40 @@ const VegetableEdit = () => {
           </div>
 
           {/* Nível de água */}
-          <div className={`${styles.field} ${styles.full}`}>
-            <label className={`${styles.label} ${styles.rangeLabel}`}>
-              <FaTint /> Nível de água (%): <span className={styles.badge}>{form.nivel.nivel_agua}%</span>
+          <div className={styles.field}>
+            <label className={styles.label}>
+              <FaTint /> Nível de água (L)
             </label>
             <input
-              type="range"
+              type="number"
               min={0}
-              max={100}
-              step={1}
-              value={form.nivel.nivel_agua}
-              onChange={(e) => setField("nivel.nivel_agua", Number(e.target.value))}
-              className={styles.range}
+              max={200}
+              className={`${styles.input} ${errors.nivel_agua ? styles.isError : ""}`}
+              placeholder="Ex.: 75"
+              value={form.nivel?.nivel_agua || ""}
+              onChange={(e) => setField("nivel.nivel_agua", e.target.value)}
             />
             {errors.nivel_agua && (
               <span className={`${styles.help} ${styles.error}`}>{errors.nivel_agua}</span>
+            )}
+          </div>
+
+          {/* Nível de fertilizante */}
+          <div className={styles.field}>
+            <label className={styles.label}>
+              <FaFlask /> Nível de fertilizante (%)
+            </label>
+            <input
+              type="number"
+              min={0}
+              max={100}
+              className={`${styles.input} ${errors.nivel_fertilizante ? styles.isError : ""}`}
+              placeholder="Ex.: 50"
+              value={form.nivel?.nivel_fertilizante || ""}
+              onChange={(e) => setField("nivel.nivel_fertilizante", e.target.value)}
+            />
+            {errors.nivel_fertilizante && (
+              <span className={`${styles.help} ${styles.error}`}>{errors.nivel_fertilizante}</span>
             )}
           </div>
         </div>
@@ -327,12 +361,48 @@ const VegetableEdit = () => {
                     setForm((prev) => {
                       const next = { ...prev };
                       const arr = [...next.fertilizantes];
-                      arr[idx] = { fertilizante: val };
+                      arr[idx] = { ...arr[idx], fertilizante: val };
                       next.fertilizantes = arr;
                       return next;
                     });
                   }}
                 />
+                <input
+                  type="number"
+                  min={0}
+                  className={`${styles.input} ${styles.quantity}`}
+                  placeholder="Qtd"
+                  value={item.quantidade}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((prev) => {
+                      const next = { ...prev };
+                      const arr = [...next.fertilizantes];
+                      arr[idx] = { ...arr[idx], quantidade: val };
+                      next.fertilizantes = arr;
+                      return next;
+                    });
+                  }}
+                />
+                <select
+                  className={`${styles.input} ${styles.unit}`}
+                  value={item.unidade}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setForm((prev) => {
+                      const next = { ...prev };
+                      const arr = [...next.fertilizantes];
+                      arr[idx] = { ...arr[idx], unidade: val };
+                      next.fertilizantes = arr;
+                      return next;
+                    });
+                  }}
+                >
+                  <option value="g">g</option>
+                  <option value="kg">kg</option>
+                  <option value="ml">ml</option>
+                  <option value="L">L</option>
+                </select>
                 <button
                   type="button"
                   aria-label={`Remover fertilizante #${idx + 1}`}

@@ -25,14 +25,30 @@ const hortalicaSchema = new mongoose.Schema({
       type: String,
       trim: true
     },
+    quantidade: {
+      type: Number,
+      min: 0,
+      default: 0
+    },
+    unidade: {
+      type: String,
+      default: 'g'
+    }
   }],
   
   nivel: {
     nivel_agua: {
       type: Number,
       min: 0,
-      max: 100
+      max: 200,
+      default: null
     },
+    nivel_fertilizante: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: null
+    }
   },
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" } // vínculo com User
 }, {

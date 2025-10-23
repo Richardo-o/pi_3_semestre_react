@@ -37,6 +37,13 @@ const VegetableSelector = ({ onVegetableSelect, selectedVegetable }) => {
     fetchVegetables();
   }, []);
 
+  // Auto-seleciona a primeira hortaliça quando carregar
+  useEffect(() => {
+    if (vegetables.length > 0 && !selectedVegetable) {
+      onVegetableSelect(vegetables[0]);
+    }
+  }, [vegetables, selectedVegetable, onVegetableSelect]);
+
   const fetchVegetables = async () => {
     try {
       setLoading(true);

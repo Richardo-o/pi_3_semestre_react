@@ -35,7 +35,7 @@ class hortalicaService {
     }
 
     //Alterando dados da hortaliça
-    async updateHortalica(id, nome_hortalica, tipo_hortalica, tempo_estimado, tempo_real, fertilizantes, nivel_agua) {
+    async updateHortalica(id, nome_hortalica, tipo_hortalica, tempo_estimado, tempo_real, fertilizantes, nivel_agua, nivel_fertilizante) {
         try{
             const updateData = {
                 nome_hortalica,
@@ -45,11 +45,15 @@ class hortalicaService {
                 fertilizantes
             };
 
-            // Só atualiza o nível se nivel_agua for válido
-            if (nivel_agua !== null && nivel_agua !== undefined) {
-                updateData.nivel = {
-                    nivel_agua: Number(nivel_agua)
-                };
+            // Atualiza os níveis se fornecidos
+            if (nivel_agua !== null && nivel_agua !== undefined || nivel_fertilizante !== null && nivel_fertilizante !== undefined) {
+                updateData.nivel = {};
+                if (nivel_agua !== null && nivel_agua !== undefined) {
+                    updateData.nivel.nivel_agua = Number(nivel_agua);
+                }
+                if (nivel_fertilizante !== null && nivel_fertilizante !== undefined) {
+                    updateData.nivel.nivel_fertilizante = Number(nivel_fertilizante);
+                }
             }
 
             const updateHortalica = await Hortalica.findByIdAndUpdate(id, updateData, { new: true });
@@ -62,7 +66,7 @@ class hortalicaService {
     }
 
     //Cadastrando hortalicas
-    async createHortalica(nome_hortalica, tipo_hortalica, user, tempo_estimado = null, tempo_real = null, fertilizantes = [], nivel_agua = null) {
+    async createHortalica(nome_hortalica, tipo_hortalica, user, tempo_estimado = null, tempo_real = null, fertilizantes = [], nivel_agua = null, nivel_fertilizante = null) {
         try {
             const newHortalica = new Hortalica({
                 nome_hortalica,
@@ -72,7 +76,8 @@ class hortalicaService {
                 tempo_real,
                 fertilizantes,
                 nivel: {
-                    nivel_agua
+                    nivel_agua: nivel_agua === undefined ? null : nivel_agua,
+                    nivel_fertilizante: nivel_fertilizante === undefined ? null : nivel_fertilizante
                 },
             });
             

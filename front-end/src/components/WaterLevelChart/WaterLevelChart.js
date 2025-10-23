@@ -22,7 +22,7 @@ import styles from './WaterLevelChart.module.css';
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip);
 
-const WaterLevelChart = () => {
+const WaterLevelChart = ({ selectedVegetable }) => {
   const [waterLevel, setWaterLevel] = useState('');
   const [waterHistory, setWaterHistory] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -106,47 +106,35 @@ const WaterLevelChart = () => {
     }
   };
 
-  // Carrega o histórico de nível da água global
+  // Atualiza o nível de água quando uma hortaliça é selecionada
   useEffect(() => {
-    fetchWaterHistory();
-  }, []);
-
-  const fetchWaterHistory = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Busca o nível atual da água
-      const currentResponse = await apiFetch('/water-level');
-      setWaterLevel(currentResponse.nivel_agua.toString());
-      
-      // Busca o histórico da água
-      const historyResponse = await apiFetch('/water-level/history?limit=7');
-      setWaterHistory(historyResponse.history || []);
-      
-    } catch (err) {
-      console.error('Erro ao carregar dados da água:', err);
-      setError('Erro ao carregar dados da água');
-      
-      // Fallback para dados simulados em caso de erro
-      const mockHistory = [
-        { date: '2024-01-15', level: 75 },
-        { date: '2024-01-16', level: 80 },
-        { date: '2024-01-17', level: 70 },
-        { date: '2024-01-18', level: 85 },
-        { date: '2024-01-19', level: 90 },
-        { date: '2024-01-20', level: 88 },
-        { date: '2024-01-21', level: 82 }
-      ];
-      
-      setWaterHistory(mockHistory);
-      setWaterLevel('75');
-    } finally {
-      setLoading(false);
+    if (selectedVegetable && selectedVegetable.nivel && selectedVegetable.nivel.nivel_agua !== null && selectedVegetable.nivel.nivel_agua !== undefined) {
+      setWaterLevel(selectedVegetable.nivel.nivel_agua.toString());
+    } else {
+      setWaterLevel('');
     }
+  }, [selectedVegetable]);
+
+  // Gera dados simulados baseados no nível atual da hortaliça
+  const generateMockHistory = (currentLevel) => {
+    const baseLevel = currentLevel || 75;
+    return [
+      { date: '2024-01-15', level: Math.max(0, baseLevel - 5) },
+      { date: '2024-01-16', level: Math.max(0, baseLevel + 5) },
+      { date: '2024-01-17', level: Math.max(0, baseLevel - 10) },
+      { date: '2024-01-18', level: Math.max(0, baseLevel + 10) },
+      { date: '2024-01-19', level: Math.max(0, baseLevel + 15) },
+      { date: '2024-01-20', level: Math.max(0, baseLevel + 13) },
+      { date: '2024-01-21', level: Math.max(0, baseLevel + 7) }
+    ];
   };
 
   const handleSaveWaterLevel = async () => {
+    if (!selectedVegetable) {
+      alert('Selecione uma hortaliça primeiro');
+      return;
+    }
+
     const level = parseFloat(waterLevel);
     if (isNaN(level) || level < 0 || level > 200) {
       alert('Nível da água deve estar entre 0 e 200 litros');
@@ -157,18 +145,26 @@ const WaterLevelChart = () => {
     setError(null);
 
     try {
-      // Atualiza o nível da água via API
-      await apiFetch('/water-level', {
+      // Atualiza o nível da água da hortaliça selecionada
+      await apiFetch(`/hortalicas/${selectedVegetable._id}`, {
         method: 'PUT',
         body: JSON.stringify({
-          nivel_agua: level
+          nome_hortalica: selectedVegetable.nome_hortalica,
+          tipo_hortalica: selectedVegetable.tipo_hortalica,
+          tempo_estimado: selectedVegetable.tempo_estimado,
+          tempo_real: selectedVegetable.tempo_real,
+          fertilizantes: selectedVegetable.fertilizantes || [],
+          nivel: {
+            nivel_agua: level,
+            nivel_fertilizante: selectedVegetable.nivel?.nivel_fertilizante || 50
+          }
         })
       });
       
       alert('Nível da água atualizado com sucesso!');
       
-      // Recarrega os dados para mostrar a atualização
-      await fetchWaterHistory();
+      // Gera novo histórico baseado no nível atualizado
+      setWaterHistory(generateMockHistory(level));
       
     } catch (err) {
       console.error('Erro ao salvar nível da água:', err);
@@ -180,29 +176,39 @@ const WaterLevelChart = () => {
   };
 
   const getChartData = () => {
-    if (waterHistory.length === 0) {
+    // Se não há hortaliça selecionada, usa dados padrão
+    if (!selectedVegetable) {
       return defaultData;
     }
 
+    // Se há hortaliça selecionada mas sem nível definido, usa dados padrão
+    if (selectedVegetable.nivel?.nivel_agua === null || selectedVegetable.nivel?.nivel_agua === undefined) {
+      return defaultData;
+    }
+
+    // Se há hortaliça selecionada, gera dados baseados no nível atual
+    const currentLevel = selectedVegetable.nivel.nivel_agua;
+    const mockHistory = generateMockHistory(currentLevel);
+    
     return {
-      labels: waterHistory.map(item => {
+      labels: mockHistory.map(item => {
         const date = new Date(item.date);
         return date.toLocaleDateString('pt-BR', { weekday: 'short' });
       }),
-        datasets: [
-          {
-            label: 'Nível da Água (L)',
-            data: waterHistory.map(item => item.level),
-            borderColor: '#3498db',
-            backgroundColor: 'rgba(52, 152, 219, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#3498db',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 6
-          }
-        ]
+      datasets: [
+        {
+          label: `Nível da Água - ${selectedVegetable.nome_hortalica} (L)`,
+          data: mockHistory.map(item => item.level),
+          borderColor: '#3498db',
+          backgroundColor: 'rgba(52, 152, 219, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: '#3498db',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 2,
+          pointRadius: 6
+        }
+      ]
     };
   };
 
@@ -215,12 +221,12 @@ const WaterLevelChart = () => {
           </div>
           <div className={styles.headerContent}>
             <h4 className={styles.title}>
-              NÍVEL GLOBAL DA ÁGUA
+              {selectedVegetable ? `NÍVEL DE ÁGUA - ${selectedVegetable.nome_hortalica.toUpperCase()}` : 'NÍVEL DE ÁGUA'}
             </h4>
             <div className={styles.subtitle}>
               <FaCalendarAlt className={styles.subtitleIcon} />
               <span>
-                Monitoramento do nível de água do sistema
+                {selectedVegetable ? `Monitoramento do nível de água da ${selectedVegetable.nome_hortalica}` : 'Selecione uma hortaliça para monitorar'}
               </span>
             </div>
           </div>
