@@ -1,60 +1,50 @@
-import { useState } from 'react';
-import styles from '@/styles/Home.module.css';
+import { useState } from "react";
+import { useRouter } from "next/router";
+import api from "../utils/api";
+import styles from "../styles/Login.module.css";
+import Cookies from "js-cookie";
 
-import Sidebar from '@/components/Sidebar/Sidebar';
-import Header from '@/components/Header/Header';
-import VegetableSelector from '@/components/VegetableSelector/VegetableSelector';
-import GrowthChart from '@/components/GrowthChart/GrowthChart';
-import WaterLevelChart from '@/components/WaterLevelChart/WaterLevelChart';
-import Indicators from '@/components/Indicators/Indicators';
-import Alerts from '@/components/Alerts/Alerts';
-import CameraPreview from '@/components/CameraPreview/CameraPreview';
-import SensorDetails from '@/components/SensorDetails/SensorDetails';
-import RecentReports from '@/components/RecentReports/RecentReports';
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const router = useRouter();
 
-export default function Home() {
-  const [selectedVegetable, setSelectedVegetable] = useState(null);
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await api.post("/user/login", { email, password });
 
-  const handleVegetableSelect = (vegetable) => {
-    setSelectedVegetable(vegetable);
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        Cookies.set("token", response.data.token, { expires: 2 });
+        window.location.href = "/home";
+      }
+    } catch (err) {
+      setError("Usuário ou senha inválidos!");
+      console.error(err);
+    }
   };
 
   return (
-    <div className={styles.dashboard}>
-      <Sidebar />
-      <main className={styles.mainContent}>
-        <Header />
-        
-        {/* Seletor de Hortaliças */}
-        <div className={styles.selectorContainer}>
-          <VegetableSelector 
-            onVegetableSelect={handleVegetableSelect}
-            selectedVegetable={selectedVegetable}
-          />
-        </div>
-
-        <div className={styles.top}>
-          <div className={styles.chartArea}>
-            <GrowthChart selectedVegetable={selectedVegetable} />
-            <WaterLevelChart selectedVegetable={selectedVegetable} />
-          </div>
-          <div className={styles.rightColumn}>
-            <Indicators selectedVegetable={selectedVegetable} />
-            <Alerts selectedVegetable={selectedVegetable} />
-          </div>
-        </div>
-        <div className={styles.bottom}>
-          <div className={styles.tile}>
-            <CameraPreview selectedVegetable={selectedVegetable} />
-          </div>
-          <div className={styles.tile}>
-            <SensorDetails selectedVegetable={selectedVegetable} />
-          </div>
-          <div className={styles.tile}>
-            <RecentReports selectedVegetable={selectedVegetable} />
-          </div>
-        </div>
-      </main>
+    <div className={styles.container}>
+      <form className={styles.box} onSubmit={handleLogin}>
+        <h2>Login</h2>
+        <input
+          type="text"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Entrar</button>
+        {error && <p className={styles.error}>{error}</p>}
+      </form>
     </div>
   );
 }

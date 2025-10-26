@@ -1,5 +1,5 @@
 import User from "../models/User.js"
-import bcrypt from "bcrypt"; // ✅ IMPORTAR BCRYPT
+import bcrypt from "bcryptjs"; // ✅ IMPORTAR BCRYPT
 
 class userService {
     async getAll(){
@@ -24,7 +24,7 @@ class userService {
                 lastname: userData.lastname,
                 email: userData.email,
                 phoneNumber: userData.phoneNumber,
-                password: hashedPassword, // ✅ SENHA CRIPTOGRAFADA
+                password: userData.password, // já vem hash do controller
                 gender: userData.gender,
                 profileImage: userData.profileImage || "front-end/uploads/profile/arquivo.png"
             });

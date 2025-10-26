@@ -1,6 +1,7 @@
 import userService from "../services/userService.js";
 import { ObjectId } from "mongodb";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs"; // ✅ Import bcrypt
 import 'dotenv/config'; // ✅ Também no controller
 
 // ✅ Usar variável de ambiente (.env)
@@ -13,12 +14,12 @@ if (!JWTSecret) {
 }
 
 const getAllUsers = async (req, res) => {
-    try{
+    try {
         const users = await userService.getAll();
-        res.status(200).json({ users: users })
-    }catch(error){
+        res.status(200).json({ users: users });
+    } catch(error) {
         console.log("❌ Erro em controller>userController>getAllUsers", error);
-        res.status(500).json({ error: "Erro interno do servidor"})
+        res.status(500).json({ error: "Erro interno do servidor" });
     }
 };
 
@@ -27,61 +28,61 @@ const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         
-        // Email válido
-        if (email !== undefined) {
-            const user = await userService.getOneByEmail(email);
-            
-            // Usuário encontrado
-            if (user !== undefined && user !== null) {
-                // Senha correta
-                if (user.password === password) {
-                    jwt.sign(
-                        { id: user._id, email: user.email },
-                        JWTSecret,
-                        { expiresIn: "48h" },
-                        (err, token) => {
-                            if (err) {
-                                res.status(400).json({ error: "❌ Erro ao gerar token" });
-                            } else {
-                                res.status(200).json({ 
-                                    message: "✅ Login realizado com sucesso!",
-                                    token: token,
-                                    user: {
-                                        id: user._id,
-                                        firstname: user.firstname,
-                                        email: user.email
-                                    }
-                                });
-                            }
-                        }
-                    );
-                } else {
-                    // Senha incorreta
-                    res.status(401).json({ error: "❌ Credenciais inválidas" });
-                }
-            } else {
-                // Usuário não encontrado
-                res.status(404).json({ error: "❌ O email enviado não foi encontrado" });
-            }
-        } else {
-            res.status(400).json({ error: "❌ Email é obrigatório" });
+        if (!email) return res.status(400).json({ error: "❌ Email é obrigatório" });
+
+        const user = await userService.getOneByEmail(email);
+
+        if (!user) {
+            return res.status(404).json({ error: "❌ O email enviado não foi encontrado" });
         }
+
+        // ✅ Compara a senha enviada com a hash do banco
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: "❌ Credenciais inválidas" });
+        }
+
+        // ✅ Gera token JWT
+        jwt.sign(
+            { id: user._id, email: user.email },
+            JWTSecret,
+            { expiresIn: "48h" },
+            (err, token) => {
+                if (err) {
+                    res.status(400).json({ error: "❌ Erro ao gerar token" });
+                } else {
+                    res.status(200).json({ 
+                        message: "✅ Login realizado com sucesso!",
+                        token: token,
+                        user: {
+                            id: user._id,
+                            firstname: user.firstname,
+                            email: user.email
+                        }
+                    });
+                }
+            }
+        );
+
     } catch (error) {
         console.log("❌ Erro interno ao efetuar login", error);
         res.status(500).json({ error: "❌ Erro interno do servidor" });
     }
-}
+};
 
 const createUser = async (req, res) => {
     try {
         const { firstname, lastname, email, phoneNumber, password, gender } = req.body;
-        
+
+        // ✅ Hash da senha antes de salvar
+        const hashedPassword = await bcrypt.hash(password, 12);
+
         const userData = {
             firstname,
             lastname,
             email,
             phoneNumber,
-            password,
+            password: hashedPassword,
             gender
         };
 
@@ -97,7 +98,7 @@ const createUser = async (req, res) => {
     }
 };
 
-// Controller para deletar usuário
+// Resto do controller permanece igual...
 const deleteUser = async (req, res) => {
     try {
         if (ObjectId.isValid(req.params.id)) {
@@ -106,15 +107,11 @@ const deleteUser = async (req, res) => {
             res.sendStatus(204);
         } else {
             console.log("❌ ID inválido para deletar usuário:", req.params.id);
-            res.status(400).json({ 
-                error: "❌ ID inválido" 
-            });
+            res.status(400).json({ error: "❌ ID inválido" });
         }
     } catch (error) {
         console.log("❌ Erro interno ao deletar usuário:", error);
-        res.status(500).json({ 
-            error: "❌ Erro interno do servidor" 
-        });
+        res.status(500).json({ error: "❌ Erro interno do servidor" });
     }
 };
 
@@ -122,18 +119,15 @@ const updateUser = async (req, res) => {
     try {
         if (ObjectId.isValid(req.params.id)) {
             const id = req.params.id;
-            const { 
-                firstname, 
-                lastname, 
-                email, 
-                phoneNumber, 
-                password, 
-                gender, 
-                profileImage 
-            } = req.body;
+            const { firstname, lastname, email, phoneNumber, password, gender, profileImage } = req.body;
+
+            let hashedPassword = password;
+            if (password) {
+                hashedPassword = await bcrypt.hash(password, 12);
+            }
 
             const updatedUser = await userService.updateUser(
-                id, firstname, lastname, email, phoneNumber, password, gender, profileImage
+                id, firstname, lastname, email, phoneNumber, hashedPassword, gender, profileImage
             );
             
             res.status(200).json({
@@ -156,9 +150,7 @@ const getUserById = async (req, res) => {
             const id = req.params.id;
             const user = await userService.getOneById(id);
             
-            if (!user) {
-                return res.status(404).json({ error: "❌ Usuário não encontrado" });
-            }
+            if (!user) return res.status(404).json({ error: "❌ Usuário não encontrado" });
             
             res.status(200).json({ user });
         } else {

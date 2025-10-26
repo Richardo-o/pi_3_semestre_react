@@ -9,7 +9,8 @@ import waterLevelRoutes from "./routes/waterLevelRoutes.js";
 import path from "path"; 
 import { fileURLToPath } from 'url';
 
-
+import cookieParser from "cookie-parser";
+app.use(cookieParser());
 
 import cors from "cors";
 

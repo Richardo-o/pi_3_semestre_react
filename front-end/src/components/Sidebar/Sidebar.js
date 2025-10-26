@@ -21,7 +21,7 @@ export default function Sidebar() {
         <ul className={styles.menuList}>
           <li className={styles.menuItem}>
             <FontAwesomeIcon icon={faHome} />
-            <Link href="/" className={styles.link}>
+            <Link href="/home" className={styles.link}>
               Início
             </Link>
           </li>
@@ -57,7 +57,7 @@ export default function Sidebar() {
             </li>
           </Link>
 
-          <Link href="/logout">
+          <Link href="/">
             <li className={styles.menuItem}>
               <FontAwesomeIcon icon={faSignOutAlt} />
               <div className={styles.link}>Sair</div>
