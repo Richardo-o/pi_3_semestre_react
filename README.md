@@ -37,10 +37,10 @@ API RESTful desenvolvida em Node.js para gerenciamento de hortaliças e usuário
 ### Instalação
 ```bash
 # Clone o repositório
-git clone https://github.com/erlonviana/pi_dsm3_backend.git
+git clone [https://github.com/erlonviana/pi_dsm3_backend.git](https://github.com/Richardo-o/pi_3_semestre_react.git)
 
 # Acesse a pasta do backend
-cd pi_dsm3_backend/back-end
+cd pi_3_semestre_react/back-end
 
 # Instale as dependências
 npm install
