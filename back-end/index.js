@@ -15,6 +15,8 @@ app.use(cookieParser());
 import cors from "cors";
 
 
+
+
 // Se NÃO usa cookies/sessão:
 app.use(cors({
   origin: "http://localhost:3000",     // URL do seu front
@@ -23,13 +25,10 @@ app.use(cors({
 }));
 
 //Importando mongoose
-import mongoose from "mongoose";
+import moongoose from './config/db-connections.js'
 
-//Conexão com MongoDB
-mongoose
-.connect("mongodb://127.0.0.1:27017/greenrise")
-.then(() => console.log("✅ Conectado ao MongoDB Server com sucesso!"))
-.catch((err) => console.log("❌ Erro ao conectar no MongoDB:", err));
+
+
 
 //Configurações do Express
 app.use(express.urlencoded({ extended: false }));
