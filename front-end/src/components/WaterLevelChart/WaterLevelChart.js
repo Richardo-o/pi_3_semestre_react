@@ -115,18 +115,19 @@ const WaterLevelChart = ({ selectedVegetable }) => {
     }
   }, [selectedVegetable]);
 
-  // Gera dados simulados baseados no nível atual da hortaliça
-  const generateMockHistory = (currentLevel) => {
-    const baseLevel = currentLevel || 75;
-    return [
-      { date: '2024-01-15', level: Math.max(0, baseLevel - 5) },
-      { date: '2024-01-16', level: Math.max(0, baseLevel + 5) },
-      { date: '2024-01-17', level: Math.max(0, baseLevel - 10) },
-      { date: '2024-01-18', level: Math.max(0, baseLevel + 10) },
-      { date: '2024-01-19', level: Math.max(0, baseLevel + 15) },
-      { date: '2024-01-20', level: Math.max(0, baseLevel + 13) },
-      { date: '2024-01-21', level: Math.max(0, baseLevel + 7) }
-    ];
+  // Busca histórico real do back-end (nível de água por usuário)
+  const fetchWaterHistory = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { history } = await apiFetch('/water-level/history?limit=7');
+      setWaterHistory(Array.isArray(history) ? history : []);
+    } catch (err) {
+      console.error('Erro ao carregar histórico de água:', err);
+      setError('Erro ao carregar histórico de água');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSaveWaterLevel = async () => {
@@ -163,8 +164,8 @@ const WaterLevelChart = ({ selectedVegetable }) => {
       
       alert('Nível da água atualizado com sucesso!');
       
-      // Gera novo histórico baseado no nível atualizado
-      setWaterHistory(generateMockHistory(level));
+      // Recarrega histórico real
+      fetchWaterHistory();
       
     } catch (err) {
       console.error('Erro ao salvar nível da água:', err);
@@ -186,19 +187,13 @@ const WaterLevelChart = ({ selectedVegetable }) => {
       return defaultData;
     }
 
-    // Se há hortaliça selecionada, gera dados baseados no nível atual
-    const currentLevel = selectedVegetable.nivel.nivel_agua;
-    const mockHistory = generateMockHistory(currentLevel);
-    
+    // Com hortaliça selecionada, usa histórico global do usuário
     return {
-      labels: mockHistory.map(item => {
-        const date = new Date(item.date);
-        return date.toLocaleDateString('pt-BR', { weekday: 'short' });
-      }),
+      labels: waterHistory.map(item => item.date),
       datasets: [
         {
-          label: `Nível da Água - ${selectedVegetable.nome_hortalica} (L)`,
-          data: mockHistory.map(item => item.level),
+          label: `Nível da Água (L)`,
+          data: waterHistory.map(item => item.level),
           borderColor: '#3498db',
           backgroundColor: 'rgba(52, 152, 219, 0.1)',
           fill: true,
@@ -211,6 +206,11 @@ const WaterLevelChart = ({ selectedVegetable }) => {
       ]
     };
   };
+
+  useEffect(() => {
+    // Carrega histórico ao montar e ao trocar a hortaliça
+    fetchWaterHistory();
+  }, [selectedVegetable?._id]);
 
   return (
     <div className={styles.container}>

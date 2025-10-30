@@ -6,6 +6,7 @@ import User from "./models/User.js";
 import userRoutes from "./routes/userRoutes.js";
 import hortalicaRoutes from "./routes/hortalicaRoutes.js";
 import waterLevelRoutes from "./routes/waterLevelRoutes.js";
+import sensorRoutes from "./routes/sensorRoutes.js";
 import path from "path"; 
 import { fileURLToPath } from 'url';
 
@@ -36,6 +37,7 @@ app.use(express.json());
 app.use("/", userRoutes)
 app.use("/", hortalicaRoutes)
 app.use("/", waterLevelRoutes)
+app.use("/api", sensorRoutes)
 
 // ✅ Caminho absoluto para static files
 const __filename = fileURLToPath(import.meta.url);

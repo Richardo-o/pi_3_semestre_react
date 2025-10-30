@@ -119,6 +119,7 @@ const options = {
 export default function GrowthChart({ selectedVegetable }) {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (selectedVegetable) {
@@ -173,50 +174,55 @@ export default function GrowthChart({ selectedVegetable }) {
     if (!selectedVegetable?._id) return;
     
     setLoading(true);
+    setError(null);
     try {
       const history = await getVegetableGrowthHistory(selectedVegetable._id);
-      
-      // Criar dados do gráfico baseados no histórico da hortaliça
-      const labels = history.map(item => `Dia ${item.dia}`);
-      const crescimentoData = history.map(item => item.crescimento);
-      const alturaData = history.map(item => item.altura);
-      const folhasData = history.map(item => item.folhas);
+      // History vem do back-end com leituras reais de sensores
+      const labels = history.map(item => new Date(item.createdAt).toLocaleDateString('pt-BR', { weekday: 'short' }));
+      const temperaturaData = history.map(item => item.temperatura);
+      const umidadeData = history.map(item => item.umidade);
+      const luminosidadeData = history.map(item => item.luminosidade);
+
+      if (!history.length) {
+        setChartData(null);
+        return;
+      }
 
       setChartData({
-        labels: labels.slice(-7), // Últimos 7 dias
+        labels,
         datasets: [
           {
-            label: 'Crescimento (%)',
-            data: crescimentoData.slice(-7),
-            borderColor: '#27ae60',
-            backgroundColor: 'rgba(39, 174, 96, 0.1)',
+            label: 'Temperatura (°C)',
+            data: temperaturaData,
+            borderColor: '#FF6B35',
+            backgroundColor: 'rgba(255, 107, 53, 0.1)',
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: '#27ae60',
+            pointBackgroundColor: '#FF6B35',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
             pointRadius: 6
           },
           {
-            label: 'Altura (cm)',
-            data: alturaData.slice(-7),
-            borderColor: '#3498db',
-            backgroundColor: 'rgba(52, 152, 219, 0.1)',
+            label: 'Umidade (%)',
+            data: umidadeData,
+            borderColor: '#4ECDC4',
+            backgroundColor: 'rgba(78, 205, 196, 0.1)',
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: '#3498db',
+            pointBackgroundColor: '#4ECDC4',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
             pointRadius: 6
           },
           {
-            label: 'Número de Folhas',
-            data: folhasData.slice(-7),
-            borderColor: '#e74c3c',
-            backgroundColor: 'rgba(231, 76, 60, 0.1)',
+            label: 'Luminosidade (lux)',
+            data: luminosidadeData,
+            borderColor: '#FFE66D',
+            backgroundColor: 'rgba(255, 230, 109, 0.1)',
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: '#e74c3c',
+            pointBackgroundColor: '#FFE66D',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
             pointRadius: 6
@@ -225,6 +231,7 @@ export default function GrowthChart({ selectedVegetable }) {
       });
     } catch (error) {
       console.error('Erro ao carregar dados da hortaliça:', error);
+      setError('Erro ao carregar dados');
     } finally {
       setLoading(false);
     }
@@ -274,11 +281,15 @@ export default function GrowthChart({ selectedVegetable }) {
           <div className={styles.loading}>
             <span>Carregando dados da hortaliça...</span>
           </div>
+        ) : error ? (
+          <div className={styles.noData}>
+            <span>{error}</span>
+          </div>
         ) : chartData ? (
           <Line data={chartData} options={options} />
         ) : (
           <div className={styles.noData}>
-            <span>Selecione uma hortaliça para visualizar os dados</span>
+            <span>{selectedVegetable ? 'Sem dados de sensores para esta hortaliça' : 'Selecione uma hortaliça para visualizar os dados'}</span>
           </div>
         )}
       </div>
