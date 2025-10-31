@@ -9,6 +9,9 @@ import waterLevelRoutes from "./routes/waterLevelRoutes.js";
 import sensorRoutes from "./routes/sensorRoutes.js";
 import path from "path"; 
 import { fileURLToPath } from 'url';
+import seedSensorsRouter from "./routes/seedSensors.js";
+
+
 
 import cookieParser from "cookie-parser";
 app.use(cookieParser());
@@ -38,6 +41,7 @@ app.use("/", userRoutes)
 app.use("/", hortalicaRoutes)
 app.use("/", waterLevelRoutes)
 app.use("/api", sensorRoutes)
+app.use("/api", seedSensorsRouter);
 
 // ✅ Caminho absoluto para static files
 const __filename = fileURLToPath(import.meta.url);
