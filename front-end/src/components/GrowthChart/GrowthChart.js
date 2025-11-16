@@ -21,6 +21,48 @@ import { getVegetableGrowthHistory } from '@/services/api';
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip);
 
+const data = {
+  labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+  datasets: [
+    {
+      label: 'Temperatura',
+      data: [22, 24, 26, 28, 25, 23, 21],
+      borderColor: '#FF6B35',
+      backgroundColor: 'rgba(255, 107, 53, 0.1)',
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#FF6B35',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      pointRadius: 6
+    },
+    {
+      label: 'Umidade',
+      data: [65, 70, 68, 72, 75, 78, 80],
+      borderColor: '#4ECDC4',
+      backgroundColor: 'rgba(78, 205, 196, 0.1)',
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#4ECDC4',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      pointRadius: 6
+    },
+    {
+      label: 'Luminosidade',
+      data: [45, 50, 55, 60, 65, 70, 75],
+      borderColor: '#FFE66D',
+      backgroundColor: 'rgba(255, 230, 109, 0.1)',
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#FFE66D',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      pointRadius: 6
+    }
+  ]
+};
+
 const options = {
   responsive: true,
   maintainAspectRatio: false,
@@ -60,32 +102,9 @@ const options = {
       }
     },
     y: {
-      type: 'linear',
-      position: 'left',
-      title: {
-        display: true,
-        text: 'Temperatura (°C) / Umidade (%)'
-      },
       grid: {
         color: 'rgba(0, 0, 0, 0.05)',
         drawBorder: false
-      },
-      ticks: {
-        font: {
-          size: 11,
-          weight: '500'
-        }
-      }
-    },
-    y1: {
-      type: 'linear',
-      position: 'right',
-      title: {
-        display: true,
-        text: 'Luminosidade (lux)'
-      },
-      grid: {
-        drawOnChartArea: false
       },
       ticks: {
         font: {
@@ -100,7 +119,6 @@ const options = {
 export default function GrowthChart({ selectedVegetable }) {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (selectedVegetable) {
@@ -111,7 +129,7 @@ export default function GrowthChart({ selectedVegetable }) {
         labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
         datasets: [
           {
-            label: 'Temperatura (°C)',
+            label: 'Temperatura',
             data: [22, 24, 26, 28, 25, 23, 21],
             borderColor: '#FF6B35',
             backgroundColor: 'rgba(255, 107, 53, 0.1)',
@@ -120,11 +138,10 @@ export default function GrowthChart({ selectedVegetable }) {
             pointBackgroundColor: '#FF6B35',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
-            pointRadius: 6,
-            yAxisID: 'y'
+            pointRadius: 6
           },
           {
-            label: 'Umidade (%)',
+            label: 'Umidade',
             data: [65, 70, 68, 72, 75, 78, 80],
             borderColor: '#4ECDC4',
             backgroundColor: 'rgba(78, 205, 196, 0.1)',
@@ -133,12 +150,11 @@ export default function GrowthChart({ selectedVegetable }) {
             pointBackgroundColor: '#4ECDC4',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
-            pointRadius: 6,
-            yAxisID: 'y'
+            pointRadius: 6
           },
           {
-            label: 'Luminosidade (lux)',
-            data: [10000, 10200, 10100, 9900, 10050, 12000, 11900],
+            label: 'Luminosidade',
+            data: [45, 50, 55, 60, 65, 70, 75],
             borderColor: '#FFE66D',
             backgroundColor: 'rgba(255, 230, 109, 0.1)',
             fill: true,
@@ -146,8 +162,7 @@ export default function GrowthChart({ selectedVegetable }) {
             pointBackgroundColor: '#FFE66D',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
-            pointRadius: 6,
-            yAxisID: 'y1'
+            pointRadius: 6
           }
         ]
       });
@@ -158,66 +173,58 @@ export default function GrowthChart({ selectedVegetable }) {
     if (!selectedVegetable?._id) return;
     
     setLoading(true);
-    setError(null);
     try {
       const history = await getVegetableGrowthHistory(selectedVegetable._id);
-      const labels = history.map(item => new Date(item.createdAt).toLocaleDateString('pt-BR', { weekday: 'short' }));
-      const temperaturaData = history.map(item => item.temperatura);
-      const umidadeData = history.map(item => item.umidade);
-      const luminosidadeData = history.map(item => item.luminosidade);
-
-      if (!history.length) {
-        setChartData(null);
-        return;
-      }
+      
+      // Criar dados do gráfico baseados no histórico da hortaliça
+      const labels = history.map(item => `Dia ${item.dia}`);
+      const crescimentoData = history.map(item => item.crescimento);
+      const alturaData = history.map(item => item.altura);
+      const folhasData = history.map(item => item.folhas);
 
       setChartData({
-        labels,
+        labels: labels.slice(-7), // Últimos 7 dias
         datasets: [
           {
-            label: 'Temperatura (°C)',
-            data: temperaturaData,
-            borderColor: '#FF6B35',
-            backgroundColor: 'rgba(255, 107, 53, 0.1)',
+            label: 'Crescimento (%)',
+            data: crescimentoData.slice(-7),
+            borderColor: '#27ae60',
+            backgroundColor: 'rgba(39, 174, 96, 0.1)',
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: '#FF6B35',
+            pointBackgroundColor: '#27ae60',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
-            pointRadius: 6,
-            yAxisID: 'y'
+            pointRadius: 6
           },
           {
-            label: 'Umidade (%)',
-            data: umidadeData,
-            borderColor: '#4ECDC4',
-            backgroundColor: 'rgba(78, 205, 196, 0.1)',
+            label: 'Altura (cm)',
+            data: alturaData.slice(-7),
+            borderColor: '#3498db',
+            backgroundColor: 'rgba(52, 152, 219, 0.1)',
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: '#4ECDC4',
+            pointBackgroundColor: '#3498db',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
-            pointRadius: 6,
-            yAxisID: 'y'
+            pointRadius: 6
           },
           {
-            label: 'Luminosidade (lux)',
-            data: luminosidadeData,
-            borderColor: '#FFE66D',
-            backgroundColor: 'rgba(255, 230, 109, 0.1)',
+            label: 'Número de Folhas',
+            data: folhasData.slice(-7),
+            borderColor: '#e74c3c',
+            backgroundColor: 'rgba(231, 76, 60, 0.1)',
             fill: true,
             tension: 0.4,
-            pointBackgroundColor: '#FFE66D',
+            pointBackgroundColor: '#e74c3c',
             pointBorderColor: '#fff',
             pointBorderWidth: 2,
-            pointRadius: 6,
-            yAxisID: 'y1'
+            pointRadius: 6
           }
         ]
       });
     } catch (error) {
       console.error('Erro ao carregar dados da hortaliça:', error);
-      setError('Erro ao carregar dados');
     } finally {
       setLoading(false);
     }
@@ -244,7 +251,8 @@ export default function GrowthChart({ selectedVegetable }) {
               <span>
                 {selectedVegetable ? 
                   `Monitoramento da ${selectedVegetable.nome_hortalica}` : 
-                  'Últimos 7 dias'}
+                  'Últimos 7 dias'
+                }
               </span>
             </div>
           </div>
@@ -254,7 +262,8 @@ export default function GrowthChart({ selectedVegetable }) {
             <span className={styles.trendText}>
               {selectedVegetable ? 
                 `${selectedVegetable.tempo_real || selectedVegetable.tempo_estimado || 'N/A'} dias` : 
-                '+12%'}
+                '+12%'
+              }
             </span>
           </div>
         </div>
@@ -265,15 +274,11 @@ export default function GrowthChart({ selectedVegetable }) {
           <div className={styles.loading}>
             <span>Carregando dados da hortaliça...</span>
           </div>
-        ) : error ? (
-          <div className={styles.noData}>
-            <span>{error}</span>
-          </div>
         ) : chartData ? (
           <Line data={chartData} options={options} />
         ) : (
           <div className={styles.noData}>
-            <span>{selectedVegetable ? 'Sem dados de sensores para esta hortaliça' : 'Selecione uma hortaliça para visualizar os dados'}</span>
+            <span>Selecione uma hortaliça para visualizar os dados</span>
           </div>
         )}
       </div>

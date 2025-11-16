@@ -1,6 +1,6 @@
 import styles from './Indicators.module.css';
 import { useState, useEffect } from 'react';
-import { getVegetableSensorData } from '@/services/api';
+import { getVegetableSensorData, apiFetch } from '@/services/api';
 import { 
   FaThermometerHalf, 
   FaTint, 
@@ -52,29 +52,25 @@ export default function Indicators({ selectedVegetable }) {
     return 'Não definido';
   };
 
-  const [sensorData, setSensorData] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // Função para obter temperatura
+  const getTemperature = () => {
+    return '24°C';
+  };
 
-  useEffect(() => {
-    const load = async () => {
-      if (!selectedVegetable?._id) {
-        setSensorData(null);
-        return;
-      }
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await getVegetableSensorData(selectedVegetable._id);
-        setSensorData(data);
-      } catch (e) {
-        setError('Falha ao carregar sensores');
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
-  }, [selectedVegetable?._id]);
+  // Função para obter luminosidade
+  const getLuminosity = () => {
+    return '800 lux';
+  };
+
+  // Função para obter pH do solo
+  const getSoilPH = () => {
+    return '6.5';
+  };
+
+  // Função para obter condutividade
+  const getConductivity = () => {
+    return '1.5 mS/cm';
+  };
 
   return (
     <div className={styles.grid}>
@@ -84,7 +80,7 @@ export default function Indicators({ selectedVegetable }) {
         </div>
         <div className={styles.content}>
           <div className={styles.label}>Temperatura</div>
-          <div className={styles.value}>{sensorData?.temperatura != null ? `${Math.round(sensorData.temperatura)}°C` : '—'}</div>
+          <div className={styles.value}>{getTemperature()}</div>
           <div className={styles.status}>
             <FaCheckCircle className={styles.statusIcon} />
             <span>Ideal</span>
@@ -112,7 +108,7 @@ export default function Indicators({ selectedVegetable }) {
         </div>
         <div className={styles.content}>
           <div className={styles.label}>Luminosidade</div>
-          <div className={styles.value}>{sensorData?.luminosidade != null ? `${Math.round(sensorData.luminosidade)} lux` : '—'}</div>
+          <div className={styles.value}>{getLuminosity()}</div>
           <div className={styles.status}>
             <FaCheckCircle className={styles.statusIcon} />
             <span>Ótima</span>
@@ -139,8 +135,8 @@ export default function Indicators({ selectedVegetable }) {
           <FaCloudRain className={styles.icon} />
         </div>
         <div className={styles.content}>
-          <div className={styles.label}>Nutrientes no Solo</div>
-          <div className={styles.value}>{sensorData?.nutrientes != null ? `${Math.round(sensorData.nutrientes)}%` : '—'}</div>
+          <div className={styles.label}>pH do Solo</div>
+          <div className={styles.value}>{getSoilPH()}</div>
           <div className={styles.status}>
             <FaCheckCircle className={styles.statusIcon} />
             <span>Normal</span>
@@ -153,8 +149,8 @@ export default function Indicators({ selectedVegetable }) {
           <FaWind className={styles.icon} />
         </div>
         <div className={styles.content}>
-          <div className={styles.label}>Umidade do Ar</div>
-          <div className={styles.value}>{sensorData?.umidade != null ? `${Math.round(sensorData.umidade)}%` : '—'}</div>
+          <div className={styles.label}>Condutividade</div>
+          <div className={styles.value}>{getConductivity()}</div>
           <div className={styles.status}>
             <FaCheckCircle className={styles.statusIcon} />
             <span>Suave</span>

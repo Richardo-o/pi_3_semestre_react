@@ -1,5 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 import styles from "../styles/Home.module.css";
+
 import Sidebar from "../components/Sidebar/Sidebar";
 import Header from "../components/Header/Header";
 import VegetableSelector from "../components/VegetableSelector/VegetableSelector";
@@ -10,49 +13,97 @@ import Alerts from "../components/Alerts/Alerts";
 import CameraPreview from "../components/CameraPreview/CameraPreview";
 import SensorDetails from "../components/SensorDetails/SensorDetails";
 import RecentReports from "../components/RecentReports/RecentReports";
-import jwt from "jsonwebtoken";
 
 export default function Home() {
-  const [selectedVegetable, setSelectedVegetable] = React.useState(null);
+  const router = useRouter();
+  const [selectedVegetable, setSelectedVegetable] = useState(null);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  // No mobile: controla se o drawer está aberto
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // No desktop: controla se a sidebar está colapsada (apenas ícones)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+  // ✅ Proteção de rota (verifica token ao carregar a página)
+  useEffect(() => {
+    const token = Cookies.get("token") || localStorage.getItem("token");
+
+    if (!token) {
+      router.replace("/"); // se não tiver token, volta pro login
+    } else {
+      setIsCheckingAuth(false); // autorizado a renderizar o conteúdo
+    }
+  }, [router]);
 
   const handleVegetableSelect = (vegetable) => setSelectedVegetable(vegetable);
 
-  const handleLogout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("token");
-      document.cookie = "token=; max-age=0"; // remove cookie
-      window.location.href = "/"; // volta para login
+  // Tela de carregamento enquanto verifica autenticação
+  if (isCheckingAuth) {
+    return (
+      <div className={styles.loadingScreen}>
+        <div className={styles.spinner}></div>
+        <p>Verificando acesso...</p>
+      </div>
+    );
+  }
+
+  const toggleSidebar = () => {
+    // Detecta se está no mobile
+    const isMobileView = typeof window !== 'undefined' && window.innerWidth <= 1024;
+    
+    if (isMobileView) {
+      // No mobile: abre/fecha o drawer
+      setIsSidebarOpen(!isSidebarOpen);
+    } else {
+      // No desktop: colapsa/expande a sidebar
+      setIsSidebarCollapsed(!isSidebarCollapsed);
     }
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
   };
 
   return (
     <div className={styles.dashboard}>
-      <Sidebar />
-      <main className={styles.mainContent}>
-        <Header />
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        onClose={closeSidebar} 
+        isCollapsed={isSidebarCollapsed}
+      />
+      <main className={styles.mainContent} data-sidebar-collapsed={isSidebarCollapsed}>
+        <Header 
+          onMenuClick={toggleSidebar} 
+          isSidebarOpen={isSidebarOpen}
+          isSidebarCollapsed={isSidebarCollapsed}
+        />
         <div className={styles.selectorContainer}>
           <VegetableSelector
             onVegetableSelect={handleVegetableSelect}
             selectedVegetable={selectedVegetable}
           />
         </div>
+
         <div className={styles.top}>
           <div className={styles.chartArea}>
             <GrowthChart selectedVegetable={selectedVegetable} />
             <WaterLevelChart selectedVegetable={selectedVegetable} />
           </div>
+
           <div className={styles.rightColumn}>
             <Indicators selectedVegetable={selectedVegetable} />
             <Alerts selectedVegetable={selectedVegetable} />
           </div>
         </div>
+
         <div className={styles.bottom}>
           <div className={styles.tile}>
             <CameraPreview selectedVegetable={selectedVegetable} />
           </div>
+
           <div className={styles.tile}>
             <SensorDetails selectedVegetable={selectedVegetable} />
           </div>
+
           <div className={styles.tile}>
             <RecentReports selectedVegetable={selectedVegetable} />
           </div>
@@ -61,52 +112,3 @@ export default function Home() {
     </div>
   );
 }
-
-export async function getServerSideProps({ req, res }) {
-  const jwt = require('jsonwebtoken');
-
-  // 1. Loga todos os cookies recebidos
-  const cookiesHeader = req.headers.cookie || 'Nenhum cookie encontrado';
-  console.log('--- SSR COOKIE DEBUG ---');
-  console.log('Raw Cookie Header:', cookiesHeader); 
-  
-  // Obter o token do cookie (mantendo o import 'parse' do arquivo anterior)
-  const { parse } = require('cookie');
-  const cookies = parse(cookiesHeader);
-  const token = cookies.token;
-  
-  console.log('Parsed Token:', token ? 'Token presente' : 'Token AUSENTE');
-  console.log('------------------------');
-
-
-  if (!token) {
-    // Redireciona para o login se o cookie estiver faltando
-    return { redirect: { destination: "/", permanent: false } };
-  }
-
-  // Tentar verificar o token
-  try {
-    const SECRET = process.env.JWT_SECRET;
-    
-    if (!SECRET) {
-        console.error("ERRO: JWT_SECRET não configurado!");
-        return { redirect: { destination: "/", permanent: false } };
-    }
-    
-    jwt.verify(token, SECRET);
-    
-    // Sucesso: Token válido
-    return { props: {} };
-
-  } catch (e) {
-    // Falha na verificação: Token inválido (expirado, modificado, ou SECRET errado)
-    console.error("ERRO de Verificação JWT:", e.message);
-    
-    // Limpa o cookie inválido
-    res.setHeader('Set-Cookie', 'token=; Max-Age=0; Path=/; HttpOnly');
-    
-    // Redireciona para o login
-    return { redirect: { destination: "/", permanent: false } };
-  }
-}
-
