@@ -21,153 +21,83 @@ import { getVegetableGrowthHistory } from '@/services/api';
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Legend, Tooltip);
 
-const data = {
-  labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-  datasets: [
-    {
-      label: 'Temperatura',
-      data: [22, 24, 26, 28, 25, 23, 21],
-      borderColor: '#FF6B35',
-      backgroundColor: 'rgba(255, 107, 53, 0.1)',
-      fill: true,
-      tension: 0.4,
-      pointBackgroundColor: '#FF6B35',
-      pointBorderColor: '#fff',
-      pointBorderWidth: 2,
-      pointRadius: 6
-    },
-    {
-      label: 'Umidade',
-      data: [65, 70, 68, 72, 75, 78, 80],
-      borderColor: '#4ECDC4',
-      backgroundColor: 'rgba(78, 205, 196, 0.1)',
-      fill: true,
-      tension: 0.4,
-      pointBackgroundColor: '#4ECDC4',
-      pointBorderColor: '#fff',
-      pointBorderWidth: 2,
-      pointRadius: 6
-    },
-    {
-      label: 'Luminosidade',
-      data: [45, 50, 55, 60, 65, 70, 75],
-      borderColor: '#FFE66D',
-      backgroundColor: 'rgba(255, 230, 109, 0.1)',
-      fill: true,
-      tension: 0.4,
-      pointBackgroundColor: '#FFE66D',
-      pointBorderColor: '#fff',
-      pointBorderWidth: 2,
-      pointRadius: 6
-    }
-  ]
-};
-
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: true,
-      position: 'top',
-      labels: {
-        usePointStyle: true,
-        padding: 20,
-        font: {
-          size: 12,
-          weight: '600'
-        }
-      }
-    },
-    tooltip: {
-      backgroundColor: 'rgba(0, 0, 0, 0.8)',
-      titleColor: '#fff',
-      bodyColor: '#fff',
-      borderColor: '#ddd',
-      borderWidth: 1,
-      cornerRadius: 8,
-      displayColors: true
-    }
-  },
-  scales: {
-    x: {
-      grid: {
-        display: false
-      },
-      ticks: {
-        font: {
-          size: 11,
-          weight: '500'
-        }
-      }
-    },
-    y: {
-      grid: {
-        color: 'rgba(0, 0, 0, 0.05)',
-        drawBorder: false
-      },
-      ticks: {
-        font: {
-          size: 11,
-          weight: '500'
-        }
-      }
-    }
-  }
-};
-
 export default function GrowthChart({ selectedVegetable }) {
   const [chartData, setChartData] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // ============================================================
+  // 1. DADOS PADRÃO (quando nenhuma hortaliça está selecionada)
+  // ============================================================
+
+  const defaultChartData = {
+    labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+    datasets: [
+      {
+        label: 'Temperatura',
+        data: [22, 24, 26, 28, 25, 23, 21],
+        borderColor: '#FF6B35',
+        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#FF6B35',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6
+      },
+      {
+        label: 'Umidade',
+        data: [65, 70, 68, 72, 75, 78, 80],
+        borderColor: '#4ECDC4',
+        backgroundColor: 'rgba(78, 205, 196, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#4ECDC4',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6
+      },
+      {
+        label: 'Luminosidade',
+        data: [45, 50, 55, 60, 65, 70, 75],
+        borderColor: '#FFE66D',
+        backgroundColor: 'rgba(255, 230, 109, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#FFE66D',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6
+      },
+      {
+        label: 'Massa Fresca Estimada (g)',
+        data: [12, 20, 35, 55, 78, 110, 145], // MOCADO REALISTA
+        borderColor: '#e74c3c',
+        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+        fill: true,
+        tension: 0.4,
+        pointBackgroundColor: '#e74c3c',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 6
+      }
+    ]
+  };
+
+  // ============================================================
+  // 2. Efeito quando seleciona ou troca hortaliça
+  // ============================================================
 
   useEffect(() => {
     if (selectedVegetable) {
       fetchVegetableData();
     } else {
-      // Dados padrão quando nenhuma hortaliça está selecionada
-      setChartData({
-        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-        datasets: [
-          {
-            label: 'Temperatura',
-            data: [22, 24, 26, 28, 25, 23, 21],
-            borderColor: '#FF6B35',
-            backgroundColor: 'rgba(255, 107, 53, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#FF6B35',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 6
-          },
-          {
-            label: 'Umidade',
-            data: [65, 70, 68, 72, 75, 78, 80],
-            borderColor: '#4ECDC4',
-            backgroundColor: 'rgba(78, 205, 196, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#4ECDC4',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 6
-          },
-          {
-            label: 'Luminosidade',
-            data: [45, 50, 55, 60, 65, 70, 75],
-            borderColor: '#FFE66D',
-            backgroundColor: 'rgba(255, 230, 109, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointBackgroundColor: '#FFE66D',
-            pointBorderColor: '#fff',
-            pointBorderWidth: 2,
-            pointRadius: 6
-          }
-        ]
-      });
+      setChartData(defaultChartData);
     }
   }, [selectedVegetable]);
+
+  // ============================================================
+  // 3. Buscando histórico e gerando Massa Fresca Estimada
+  // ============================================================
 
   const fetchVegetableData = async () => {
     if (!selectedVegetable?._id) return;
@@ -176,14 +106,19 @@ export default function GrowthChart({ selectedVegetable }) {
     try {
       const history = await getVegetableGrowthHistory(selectedVegetable._id);
       
-      // Criar dados do gráfico baseados no histórico da hortaliça
+      // Montando dados do histórico
       const labels = history.map(item => `Dia ${item.dia}`);
       const crescimentoData = history.map(item => item.crescimento);
       const alturaData = history.map(item => item.altura);
-      const folhasData = history.map(item => item.folhas);
+
+      // MASSA FRESCA CALCULADA AUTOMÁTICA:
+      // fórmula: massa = altura² × 0.12
+      const massaFrescaData = alturaData.map(h =>
+        Math.round((h * h) * 0.12)
+      );
 
       setChartData({
-        labels: labels.slice(-7), // Últimos 7 dias
+        labels: labels.slice(-7),
         datasets: [
           {
             label: 'Crescimento (%)',
@@ -210,8 +145,8 @@ export default function GrowthChart({ selectedVegetable }) {
             pointRadius: 6
           },
           {
-            label: 'Número de Folhas',
-            data: folhasData.slice(-7),
+            label: 'Massa Fresca Estimada (g)',
+            data: massaFrescaData.slice(-7),
             borderColor: '#e74c3c',
             backgroundColor: 'rgba(231, 76, 60, 0.1)',
             fill: true,
@@ -223,12 +158,59 @@ export default function GrowthChart({ selectedVegetable }) {
           }
         ]
       });
+
     } catch (error) {
       console.error('Erro ao carregar dados da hortaliça:', error);
     } finally {
       setLoading(false);
     }
   };
+
+  // ============================================================
+  // 4. Opções do gráfico
+  // ============================================================
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+          font: {
+            size: 12,
+            weight: '600'
+          }
+        }
+      },
+      tooltip: {
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        titleColor: '#fff',
+        bodyColor: '#fff',
+        borderColor: '#ddd',
+        borderWidth: 1,
+        cornerRadius: 8,
+        displayColors: true
+      }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { font: { size: 11, weight: '500' } }
+      },
+      y: {
+        grid: { color: 'rgba(0,0,0,0.05)', drawBorder: false },
+        ticks: { font: { size: 11, weight: '500' } }
+      }
+    }
+  };
+
+  // ============================================================
+  // 5. Renderização
+  // ============================================================
 
   return (
     <div className={styles.container}>
@@ -271,35 +253,16 @@ export default function GrowthChart({ selectedVegetable }) {
       
       <div className={styles.chartContainer}>
         {loading ? (
-          <div className={styles.loading}>
-            <span>Carregando dados da hortaliça...</span>
-          </div>
+          <div className={styles.loading}><span>Carregando dados da hortaliça...</span></div>
         ) : chartData ? (
           <Line data={chartData} options={options} />
         ) : (
-          <div className={styles.noData}>
-            <span>Selecione uma hortaliça para visualizar os dados</span>
-          </div>
+          <div className={styles.noData}><span>Selecione uma hortaliça para visualizar os dados</span></div>
         )}
       </div>
-      
+
       <div className={styles.legend}>
-        {selectedVegetable ? (
-          <>
-            <div className={styles.legendItem}>
-              <FaChartLine className={styles.legendIcon} style={{color: '#27ae60'}} />
-              <span>Crescimento (%)</span>
-            </div>
-            <div className={styles.legendItem}>
-              <FaTint className={styles.legendIcon} style={{color: '#3498db'}} />
-              <span>Altura (cm)</span>
-            </div>
-            <div className={styles.legendItem}>
-              <FaSun className={styles.legendIcon} style={{color: '#e74c3c'}} />
-              <span>Número de Folhas</span>
-            </div>
-          </>
-        ) : (
+        {!selectedVegetable && (
           <>
             <div className={styles.legendItem}>
               <FaThermometerHalf className={styles.legendIcon} style={{color: '#FF6B35'}} />
