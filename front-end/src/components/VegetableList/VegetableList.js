@@ -220,7 +220,7 @@ const VegetableList = () => {
                     <FaFlask /> pH Ideal
                   </label>
                   <span className={styles.infoValue}>
-                    {hortalica.nivel?.nivel_fertilizante !== null && hortalica.nivel?.nivel_fertilizante !== undefined ? `${hortalica.nivel.nivel_fertilizante}%` : "Não definido"}
+                    {hortalica.nivel?.nivel_fertilizante !== null && hortalica.nivel?.nivel_fertilizante !== undefined ? `${hortalica.nivel.nivel_fertilizante}` : "Não definido"}
                   </span>
                 </div>
 
