@@ -29,9 +29,9 @@ export default function Sidebar({ isOpen, onClose, isCollapsed }) {
       { icon: faList, label: "Lista de Hortaliças", href: "/vegetableList" },
     ],
     secundario: [
-      { icon: faCamera, label: "Câmeras", href: "/cameras" },
+      { icon: faCamera, label: "Câmeras", href: "/cameraViewer" },
       { icon: faFileAlt, label: "Relatórios", href: "/reports" },
-      { icon: faCog, label: "Configurações", href: "/settings" },
+      { icon: faCog, label: "Configurações", href: "/Settings" },
     ],
   };
 

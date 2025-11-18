@@ -244,13 +244,11 @@ const VegetableForm = () => {
 
           {/* Nível de fertilizante */}
           <div className={styles.field}>
-            <label className={styles.label}><FaFlask /> Nível de fertilizante (%)</label>
+            <label className={styles.label}><FaFlask /> pH Ideal</label>
             <input
               type="number"
-              min={0}
-              max={100}
               className={`${styles.input} ${errors.nivel_fertilizante ? styles.isError : ""}`}
-              placeholder="Ex.: 50"
+              placeholder="Ex.: 5.5"
               value={form.nivel?.nivel_fertilizante || ""}
               onChange={(e) => setField("nivel.nivel_fertilizante", e.target.value)}
             />

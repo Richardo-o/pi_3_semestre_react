@@ -323,15 +323,13 @@ const VegetableEdit = () => {
             )}
           </div>
 
-          {/* Nível de fertilizante */}
+          {/* PH ideal */}
           <div className={styles.field}>
             <label className={styles.label}>
-              <FaFlask /> Nível de fertilizante (%)
+              <FaFlask /> pH Ideal
             </label>
             <input
               type="number"
-              min={0}
-              max={100}
               className={`${styles.input} ${errors.nivel_fertilizante ? styles.isError : ""}`}
               placeholder="Ex.: 50"
               value={form.nivel?.nivel_fertilizante || ""}
