@@ -20,7 +20,7 @@ export default function CameraPreview({ selectedVegetable }) {
           </div>
           <div className={styles.headerContent}>
             <h4 className={styles.title}>
-              CÂMERAS - VISUALIZAÇÃO RÁPIDA
+              CÂMERAS
               {selectedVegetable && (
                 <span className={styles.vegetableName}>
                   - {selectedVegetable.nome_hortalica}
@@ -58,7 +58,7 @@ export default function CameraPreview({ selectedVegetable }) {
             </div>
           </div>
           <div className={styles.imageContainer}>
-            <img src="https://picsum.photos/200/150?1" alt="cam1" className={styles.cameraImage} />
+            <img src="https://s2-oglobo.glbimg.com/CV9ysWLW93UyAjdbFd4uvxsRNcQ=/0x0:1296x864/888x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_da025474c0c44edd99332dddb09cabe8/internal_photos/bs/2022/X/x/sqFAM3Ra6BFwwWdRBl1A/99846016-brasil-sao-paulo-sp-13-07-2022-pink-farms-fazenda-vertical-de-producao-de-alime.jpg" alt="cam1" className={styles.cameraImage} />
             <div className={styles.imageOverlay}>
               <button className={styles.playButton}>
                 <FaPlay className={styles.playIcon} />
@@ -93,7 +93,7 @@ export default function CameraPreview({ selectedVegetable }) {
             </div>
           </div>
           <div className={styles.imageContainer}>
-            <img src="https://picsum.photos/200/150?2" alt="cam2" className={styles.cameraImage} />
+            <img src="https://campoenegocios.com/wp-content/uploads/2021/10/Fazenda-1-1.jpg" alt="cam2" className={styles.cameraImage} />
             <div className={styles.imageOverlay}>
               <button className={styles.playButton}>
                 <FaPlay className={styles.playIcon} />

@@ -11,7 +11,6 @@ import WaterLevelChart from "../components/WaterLevelChart/WaterLevelChart";
 import Indicators from "../components/Indicators/Indicators";
 import Alerts from "../components/Alerts/Alerts";
 import CameraPreview from "../components/CameraPreview/CameraPreview";
-import SensorDetails from "../components/SensorDetails/SensorDetails";
 import RecentReports from "../components/RecentReports/RecentReports";
 
 export default function Home() {
@@ -48,8 +47,9 @@ export default function Home() {
 
   const toggleSidebar = () => {
     // Detecta se está no mobile
-    const isMobileView = typeof window !== 'undefined' && window.innerWidth <= 1024;
-    
+    const isMobileView =
+      typeof window !== "undefined" && window.innerWidth <= 1024;
+
     if (isMobileView) {
       // No mobile: abre/fecha o drawer
       setIsSidebarOpen(!isSidebarOpen);
@@ -65,14 +65,17 @@ export default function Home() {
 
   return (
     <div className={styles.dashboard}>
-      <Sidebar 
-        isOpen={isSidebarOpen} 
-        onClose={closeSidebar} 
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={closeSidebar}
         isCollapsed={isSidebarCollapsed}
       />
-      <main className={styles.mainContent} data-sidebar-collapsed={isSidebarCollapsed}>
-        <Header 
-          onMenuClick={toggleSidebar} 
+      <main
+        className={styles.mainContent}
+        data-sidebar-collapsed={isSidebarCollapsed}
+      >
+        <Header
+          onMenuClick={toggleSidebar}
           isSidebarOpen={isSidebarOpen}
           isSidebarCollapsed={isSidebarCollapsed}
         />
@@ -87,25 +90,20 @@ export default function Home() {
           <div className={styles.chartArea}>
             <GrowthChart selectedVegetable={selectedVegetable} />
             <WaterLevelChart selectedVegetable={selectedVegetable} />
+             <CameraPreview selectedVegetable={selectedVegetable} />
           </div>
-
+         
           <div className={styles.rightColumn}>
             <Indicators selectedVegetable={selectedVegetable} />
             <Alerts selectedVegetable={selectedVegetable} />
+
+            <RecentReports selectedVegetable={selectedVegetable} />
           </div>
         </div>
 
         <div className={styles.bottom}>
           <div className={styles.tile}>
-            <CameraPreview selectedVegetable={selectedVegetable} />
-          </div>
-
-          <div className={styles.tile}>
-            <SensorDetails selectedVegetable={selectedVegetable} />
-          </div>
-
-          <div className={styles.tile}>
-            <RecentReports selectedVegetable={selectedVegetable} />
+           
           </div>
         </div>
       </main>

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { FaBars, FaTimes, FaCheckSquare } from 'react-icons/fa';
 import styles from './Header.module.css';
+
 
 export default function Header({ onMenuClick, isSidebarOpen, isSidebarCollapsed }) {
   const [isMobile, setIsMobile] = useState(false);
@@ -35,7 +36,6 @@ export default function Header({ onMenuClick, isSidebarOpen, isSidebarCollapsed 
       </div>
       <div className={styles.right}>
         <span className={styles.status}>Status: <strong>OK</strong></span>
-        <button className={styles.refreshButton}>Atualizar</button>
         <img src="https://i.pravatar.cc/32" alt="User" className={styles.userIcon} />
       </div>
     </header>
